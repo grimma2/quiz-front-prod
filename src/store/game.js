@@ -1,7 +1,5 @@
 import {ax, backendHost} from "@/api/defaults";
 
-const secretKey = 'django-secret-token'
-
 
 export const game = {
   state: () => ({
@@ -31,7 +29,7 @@ export const game = {
     makeGameSocket({commit}, {gamePk, commitToState=true}) {
       console.log('makeGameSocket...', commitToState)
       const gameSocket = new WebSocket(
-        `ws://${backendHost}/game-socket/${gamePk}/${secretKey}/`,
+        `ws://${backendHost}/game-socket/${gamePk}/${process.env.SECRET_KEY}/`,
       )
       gameSocket.onclose = (e) => {console.log(e)}
 
