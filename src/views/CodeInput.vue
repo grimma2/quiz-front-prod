@@ -1,9 +1,11 @@
 <template>
   <div class="code-input">
     <form @submit.stop="submitCode">
-      <input v-model="code" type="text" placeholder="Введите код команды">
+      <input class="input" v-model="code" type="text" placeholder="Введите код команды">
+      <p class="error-text" v-if="error">
+        <span class="inner-error">{{ error }}</span>
+      </p>
     </form>
-    <p v-if="error">{{ error }}</p>
   </div>
 </template>
 
@@ -31,6 +33,34 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+@use "@/scss/globalDefaults";
+@import "@/scss/style.scss";
 
+
+.input {
+  @include defaultInput();
+}
+
+.code-input {
+  @include flexCentered();
+  min-height: 100vh;
+
+  //form {
+  //  width: $elementsWidth;
+  //}
+}
+
+.error-text {
+  margin-top: 1em;
+  padding: .5em .8em;
+  border-radius: globalDefaults.$smallBorderRadius;
+  @include flexCentered();
+  background-color: #c70c0c;
+  width: 100%;
+
+  .inner-error {
+    color: wheat;
+  }
+}
 </style>

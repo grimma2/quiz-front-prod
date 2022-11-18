@@ -1,0 +1,27 @@
+.question-answers {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+
+  .ques-answer {
+    max-width: 100%;
+    padding: .1em .2em;
+    display: grid;
+    grid-template-columns: calc(100% - 1.4em) 1.3em;
+    grid-column-gap: .2em;
+    align-items: start;
+    .delete-answer-img {
+      align-self: center;
+      height: .7em;
+      width: .7em;
+    }
+    > span {
+      word-wrap: break-word;
+    }
+  }
+}
+
+.question-answers > * {
+  margin: .3em;
+}

@@ -1,0 +1,53 @@
+@use "@/scss/globalDefaults";
+
+$globalPadding: .5em;
+
+
+@mixin defaultInput () {
+  border-radius: globalDefaults.$smallBorderRadius;
+  padding: .5em .8em;
+}
+
+@mixin flexCentered () {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+@mixin pageElement () {
+  width: 97.5%;
+  margin: 0 auto;
+  min-height: 100vh;
+}
+
+@mixin size100 () {
+  height: 100%;
+  width: 100%;
+}
+
+@mixin separateBorder () {
+  &:before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: .5px;
+    width: 100%;
+    background-color: #1b1b1b;
+  }
+}
+
+@mixin fullElementGrid () {
+  display: grid;
+  grid-template-columns: 100%;
+  grid-row-gap: $globalPadding;
+  padding: $globalPadding;
+}
+
+@mixin button ($color) {
+  border: 1px solid #1b1b1b;
+  border-radius: globalDefaults.$smallBorderRadius;
+  background-color: $color;
+  color: wheat;
+  cursor: pointer;
+}

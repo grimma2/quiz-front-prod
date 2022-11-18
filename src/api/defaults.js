@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 
-export const backendHost = 'quiz-back-prod-production.up.railway.app'
+export const backendHost = 'localhost:8000'
 
 export const ax = axios.create({
   baseURL: `${location.protocol}//${backendHost}/api/v1/`
