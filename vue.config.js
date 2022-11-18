@@ -3,6 +3,6 @@ module.exports = defineConfig({
   transpileDependencies: true,
   devServer: {
     compress: true,
-    allowedHosts: true
+    allowedHosts: 'all'
   }
 })
