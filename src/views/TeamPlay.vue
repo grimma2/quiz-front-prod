@@ -8,15 +8,19 @@
       :question="$store.state.team.activeQuestion"
       v-else-if="!objectIsEmpty($store.state.team.activeQuestion)"
     />
-    <p class="not-in-game" v-else>Организатор пока что ещё не запустил игру</p>
+    <div v-else-if="$store.state.team.notHaveLeaderBoard">
+      Пока ещё не проводилось ни одного сеанса игры.
+      <button class="exit-button" @click="removeCookie">Выйти</button>
+    </div>
+    <p class="not-in-game" v-else>Организатор пока что ещё не запустил игры</p>
   </div>
 </template>
 
 <script>
 import {ax, teamSocketEvents} from "@/api/defaults";
 
-import cookie from "@/mixins/cookie";
-import objectIsEmpty from "@/mixins/objectIsEmpty";
+import cookie from "@/mixins/addMethods/cookie";
+import objectIsEmpty from "@/mixins/addMethods/objectIsEmpty";
 
 import ActiveQuestion from "@/components/ActiveQuestion";
 import LeaderBoard from "@/components/LeaderBoard";
@@ -44,6 +48,8 @@ export default {
           this.$store.commit('team/setTimer', response.data.timer)
         } else if (response.data.leader_board) {
           this.$store.commit('team/setLeaderBoard', response.data.leader_board)
+        } else {
+          this.$store.commit('team/setNotHaveLeaderBoard', true)
         }
         this.$store.commit('team/setGameState', response.data.game_state)
       } catch (e) {

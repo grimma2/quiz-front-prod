@@ -8,7 +8,8 @@ export const team = {
     teamSocket: false,
     gameState: 'OFF',
     activeQuestion: {},
-    leaderBoard: {}
+    leaderBoard: {},
+    notHaveLeaderBoard: false
   }),
   getters: {},
   mutations: {
@@ -38,11 +39,14 @@ export const team = {
     clearTimerInterval (state) {
       clearInterval(state.timerIntervalId)
       state.timerIntervalId = false
+    },
+    setNotHaveLeaderBoard (state, notHaveLeaderBoard) {
+      state.notHaveLeaderBoard = notHaveLeaderBoard
     }
   },
   actions: {
     makeTeamSocket ({commit}, code) {
-      const teamSocket = new WebSocket(`wss://${backendHost}/team-socket/${code}/`)
+      const teamSocket = new WebSocket(`ws://${backendHost}/team-socket/${code}/`)
       teamSocket.onclose = (e) => {console.log(e)}
       commit('setTeamSocket', teamSocket)
     },
@@ -91,10 +95,11 @@ export const team = {
       console.log('updateLeaderBoard action')
       commit('setLeaderBoard', eventData)
     },
-    sendNextQuestion ({state}) {
+    sendNextQuestion ({state}, bonusPoints) {
       console.log('sendNextQuestion...')
       state.teamSocket.send(JSON.stringify({
-        type: 'next_question'
+        type: 'next_question',
+        bonus_points: bonusPoints
       }))
     },
     async fetchQuestionTime ({commit}, code) {

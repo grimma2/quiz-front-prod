@@ -10,31 +10,38 @@ import TeamPlay from "@/views/TeamPlay";
 const routes = [
   {
     path: '/',
-    component: Home
+    component: Home,
+    meta: {title: 'Викторина'}
   },
   {
     path: '/games',
-    component: UserGames
+    component: UserGames,
+    meta: {title: 'Список игр'}
   },
   {
     path: '/code-input',
-    component: CodeInput
+    component: CodeInput,
+    meta: {title: 'Ввод кода команды'}
   },
   {
     path: '/game/:pk',
-    component: GameDetail
+    component: GameDetail,
+    meta: {title: 'Страница игры'}
   },
   {
     path: '/game/:pk/edit',
-    component: GameEdit
+    component: GameEdit,
+    meta: {title: 'Редактировать игру'}
   },
   {
     path: '/game/create',
-    component: GameCreate
+    component: GameCreate,
+    meta: {title: 'Создать игру'}
   },
   {
     path: '/play/team/:code',
-    component: TeamPlay
+    component: TeamPlay,
+    meta: {title: 'Процесс игры'}
   }
 ]
 

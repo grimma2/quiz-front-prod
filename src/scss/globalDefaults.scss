@@ -1,0 +1,77 @@
+$smallBorderRadius: .3em;
+$questionWidth: 21em;
+
+* {
+  font-size: 18px;
+  text-decoration: none;
+  color: #1b1b1b;
+  font-family: Roboto, sans-serif;
+}
+
+body, html, h1, h2, h3, h5, h5, h6, p {
+  margin: 0;
+  padding: 0;
+}
+
+/* default check box */
+.checkbox input[type="checkbox"] {
+  display: none;
+}
+.checkbox input[type="checkbox"] + label {
+  display: block;
+  position: relative;
+  padding-left: 35px;
+  margin-bottom: 20px;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+.checkbox input[type="checkbox"]:hover + label:before {
+  border: 1px solid #343a3f;
+  box-shadow: 2px 1px 0 #343a3f;
+}
+.checkbox input[type="checkbox"] + label:last-child {
+  margin-bottom: 0;
+}
+.checkbox input[type="checkbox"] + label:before {
+  content: "";
+  display: block;
+  width: 1.4em;
+  height: 1.4em;
+  border: 1px solid #343a3f;
+  border-radius: 0.2em;
+  position: absolute;
+  left: 0;
+  top: -.2em;
+  -webkit-transition: all 0.2s, background 0.2s ease-in-out;
+  transition: all 0.2s, background 0.2s ease-in-out;
+  background: rgba(255, 255, 255, 0.03);
+  box-shadow: -2px -1px 0 #343a3f;
+  background: #f3f3f3;
+}
+.checkbox input[type="checkbox"]:checked + label:before {
+  border: 2px solid #fff;
+  border-radius: $smallBorderRadius;
+  background: #50565a;
+  box-shadow: 2px 1px 0 #50565a;
+}
+/* default check box END */
+
+/* answer colors */
+.ques-answer[data-color="default"] {
+  background: rgba(101, 103, 220, 0.6);
+  border-radius: $smallBorderRadius;
+}
+
+.ques-answer[data-color="false"] {
+  background: rgba(213, 35, 69, 0.6);
+  border-radius: $smallBorderRadius;
+}
+
+.ques-answer[data-color="true"] {
+  background: rgba(47, 213, 35, 0.6);
+  border-radius: $smallBorderRadius;
+}
+/* answer colors end */

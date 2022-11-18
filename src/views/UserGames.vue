@@ -1,67 +1,65 @@
 <template>
   <div class="user-games">
-    <games-list :games="games" @setState="setGameState" @deleteGameSave="deleteGameSave"/>
+    <confirm-move-dialog
+      :need-to-call="$store.state.dialog.moveDialog.needToCall"
+      :need-to-pass-args="$store.state.dialog.moveDialog.needToPassArgs"
+      :text="$store.state.dialog.moveDialog.text"
+      v-if="$store.state.dialog.moveDialog.show"
+      @close="$store.commit('dialog/setMoveDialog', {needToCall: null, needToPassArgs: [], text: ''})"
+    />
+    <games-list :games="games"/>
+    <div class="button-container">
+      <button @click="$router.push({path: '/game/create'})">Создать новую</button>
+    </div>
   </div>
-  <button @click="$router.push({path: '/game/create'})">Создать новую</button>
 </template>
 
 <script>
+import {mapState} from "vuex";
 import GamesList from "@/components/GamesList";
-import {ax} from '@/api/defaults'
-import game from '@/mixins/gameDelete'
+import game from '@/mixins/addMethods/gameDelete'
+import ConfirmMoveDialog from "@/components/UI/dialogs/ConfirmMoveDialog";
 
 export default {
   name: "UserGames",
-  components: {GamesList},
+  components: {ConfirmMoveDialog, GamesList},
   mixins: [game],
-  data () {
-    return {
-      games: []
-    }
-  },
-  methods: {
-    async fetchGames (games) {
-      try {
-        const response = await ax.post('game/list/', {games: games})
-        return response.data
-      } catch (e) {
-        console.log(e)
-      }
-    },
-    setGameState (gameState, gamePk) {
-      this.$store.dispatch('game/makeGameSocket', gamePk)
-
-      setTimeout(() => {
-        try {
-          this.$store.state.game.gameSocket.send(JSON.stringify({
-            type: 'change_state',
-            game_state: gameState
-          }))
-        } catch (e) {
-          window.location.reload()
-        }
-        this.$store.state.game.gameSocket.close()
-      }, 1000)
-
-      for (let game of this.games) {
-        if (gamePk === game.pk) {
-          game.game_state = gameState
-        }
-      }
-    },
-    deleteGameSave (gamePk) {
-      this.deleteGame(gamePk)
-      this.games = this.games.filter(game => game.pk !== gamePk)
-    },
+  computed: {
+    ...mapState({
+      games: state => state.game.games
+    })
   },
   async mounted () {
     let games = localStorage.getItem('games')
     if (!games) return
-    this.games = await this.fetchGames(JSON.parse(games))
+    this.$store.dispatch('game/fetchGames', JSON.parse(games))
+  },
+  beforeUnmount() {
+    this.$store.commit('game/setGames', [])
   }
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+@import "@/scss/style.scss";
 
+.user-games {
+  @include pageElement();
+}
+
+.button-container {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 5em;
+  display: flex;
+  align-items: center;
+
+  button {
+    font-size: 1.2em;
+    margin-left: 1em;
+    @include button(deepskyblue)
+  }
+}
 </style>
