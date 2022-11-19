@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 
-export const backendHost = 'aquamarine-kashata-989ba9.netlify.app'
+export const backendHost = 'quiz-back-di7b.onrender.com'
 
 export const ax = axios.create({
   baseURL: `${location.protocol}//${backendHost}/api/v1/`
