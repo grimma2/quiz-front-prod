@@ -198,9 +198,12 @@ export default {
       if (!this.isValid()) return
       try {
         const response = await ax.post(this.getSaveURL(), this.game)
-        let games = JSON.parse(localStorage.getItem('games'))
-        games.push(response.data.pk)
-        localStorage.setItem('games', JSON.stringify(games))
+        if (!this.$route.params.pk) {
+          // add game to list if game was created
+          let games = JSON.parse(localStorage.getItem('games'))
+          games.push(response.data.pk)
+          localStorage.setItem('games', JSON.stringify(games))
+        }
         this.$router.push({path: `/game/${response.data.pk}`})
       } catch (e) {
         console.log(e)
