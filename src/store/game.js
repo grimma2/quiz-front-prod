@@ -30,7 +30,7 @@ export const game = {
       console.log('makeGameSocket...', commitToState)
       console.log(process)
       const gameSocket = new WebSocket(
-        `wss://${backendHost}/game-socket/${gamePk}/${process.env.SECRET_KEY}/`,
+        `wss://${backendHost}/game-socket/${gamePk}/`,
       )
       gameSocket.onclose = (e) => {console.log(e)}
 
