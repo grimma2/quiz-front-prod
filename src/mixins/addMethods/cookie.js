@@ -1,6 +1,6 @@
 export default {
   methods: {
-    cookiesIsExists (name) {
+    cookiesIsExists (name, content) {
       if (document.cookie.includes(`${name}=${content}`)) return true
     },
     removeCookie() {

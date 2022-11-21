@@ -78,7 +78,7 @@ export default {
     // if socket is valid fetch question time for timer
     this.$store.dispatch('team/fetchQuestionTime', this.$route.params.code)
 
-    if (this.cookiesIsExists('inGame')) this.setQuestionOrBoard()
+    if (this.cookiesIsExists('inGame', 1)) this.setQuestionOrBoard()
 
     this.setListeners(socket)
   }
