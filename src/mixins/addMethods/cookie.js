@@ -5,6 +5,7 @@ export default {
 
       let firstCondition = cookies.includes(`; ${name}=`)
       let secondCondition = cookies.match(/inGame=(.*); /)
+      console.log(`check cookie f: ${firstCondition} s: ${secondCondition}`)
 
       if (firstCondition || secondCondition) return true
     },
