@@ -1,6 +1,5 @@
 import {ax, backendHost} from "@/api/defaults";
 
-
 export const game = {
   state: () => ({
     gameSocket: false,
@@ -29,7 +28,7 @@ export const game = {
     makeGameSocket({commit}, {gamePk, commitToState=true}) {
       console.log('makeGameSocket...', commitToState)
       const gameSocket = new WebSocket(
-        `ws://${backendHost}/game-socket/${gamePk}/${process.env.SECRET_KEY}/`,
+        `ws://${backendHost}/game-socket/${gamePk}/`,
       )
       gameSocket.onclose = (e) => {console.log(e)}
 
