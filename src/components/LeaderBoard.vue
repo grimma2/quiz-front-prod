@@ -11,7 +11,6 @@
     <button
       class="exit-button"
       @click="removeCookie"
-      v-if="gameState === 'OFF'"
     >Выйти</button>
   </div>
 </template>

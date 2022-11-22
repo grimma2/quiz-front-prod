@@ -111,7 +111,11 @@ export default {
           this.error = 'Некоторые ответы оказались не верны'
         }
       }
-      if (answerIsValid) this.$store.dispatch('team/sendNextQuestion', bonusPoints)
+      if (answerIsValid) {
+        this.currentInput = ''
+        this.inputAnswers = []
+        this.$store.dispatch('team/sendNextQuestion', bonusPoints)
+      }
     },
     countdown () {
       let time = this.$store.state.team.timer
