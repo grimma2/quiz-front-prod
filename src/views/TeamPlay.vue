@@ -8,11 +8,15 @@
       :question="$store.state.team.activeQuestion"
       v-else-if="!objectIsEmpty($store.state.team.activeQuestion)"
     />
-    <div v-else-if="$store.state.team.notHaveLeaderBoard">
-      Пока ещё не проводилось ни одного сеанса игры.
-      <button class="exit-button" @click="removeCookie">Выйти</button>
+    <div class="not-have-leader-board" v-else-if="$store.state.team.notHaveLeaderBoard">
+      <div class="not-have-container">
+        <p class="text">Пока ещё не проводилось ни одного сеанса игры</p>
+        <button class="exit-button" @click="removeCookie">Выйти</button>
+      </div>
     </div>
-    <p class="not-in-game" v-else>Организатор пока что ещё не запустил игры</p>
+    <div class="wait" v-else>
+      <p class="text">Организатор пока что ещё не запустил игры</p>
+    </div>
   </div>
 </template>
 
@@ -85,6 +89,31 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+@use "@/scss/globalDefaults";
+@import "@/scss/style.scss";
 
+.not-have-leader-board {
+  @include pageElement();
+  @include flexCentered();
+
+  .not-have-container {
+    > button {
+      margin-top: .5em;
+      @include button(red);
+    }
+  }
+}
+
+.wait {
+  @include pageElement();
+  @include flexCentered();
+}
+
+.text {
+  padding: 1em .5em;
+  border-radius: globalDefaults.$smallBorderRadius;
+  background-color: deepskyblue;
+  color: white;
+}
 </style>

@@ -30,9 +30,9 @@ export default {
     })
   },
   async mounted () {
-    let games = localStorage.getItem('games')
-    if (!games) return
-    this.$store.dispatch('game/fetchGames', JSON.parse(games))
+    let games = JSON.parse(localStorage.getItem('games'))
+    if (!games.length) return
+    this.$store.dispatch('game/fetchGames', games)
   },
   beforeUnmount() {
     this.$store.commit('game/setGames', [])
