@@ -73,7 +73,6 @@ export const team = {
         dispatch('fetchLeaderBoard', code)
         commit('clearTimerInterval')
       } else if (eventData === 'ON') {
-        document.cookie = 'inGame=1; expires=Fri, 31 Dec 9999 23:59:59 GMT'
         commit('setTimer', state.questionTime)
         dispatch('fetchQuestion', code)
       }

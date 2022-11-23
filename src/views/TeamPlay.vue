@@ -11,7 +11,7 @@
     <div class="not-have-leader-board" v-else-if="$store.state.team.notHaveLeaderBoard">
       <div class="not-have-container">
         <p class="text">Пока ещё не проводилось ни одного сеанса игры</p>
-        <button class="exit-button" @click="removeCookie">Выйти</button>
+        <button class="exit-button" @click="$router.push({path: '/'})">Выйти</button>
       </div>
     </div>
     <div class="wait" v-else>
@@ -23,7 +23,6 @@
 <script>
 import {ax, teamSocketEvents} from "@/api/defaults";
 
-import cookie from "@/mixins/addMethods/cookie";
 import objectIsEmpty from "@/mixins/addMethods/objectIsEmpty";
 
 import ActiveQuestion from "@/components/ActiveQuestion";
@@ -32,7 +31,7 @@ import LeaderBoard from "@/components/LeaderBoard";
 export default {
   name: "TeamPlay",
   components: {LeaderBoard, ActiveQuestion},
-  mixins: [cookie, objectIsEmpty],
+  mixins: [objectIsEmpty],
   methods: {
     socketIsValid(socket) {
       setTimeout(() => {
@@ -82,8 +81,7 @@ export default {
     // if socket is valid fetch question time for timer
     this.$store.dispatch('team/fetchQuestionTime', this.$route.params.code)
 
-    if (this.cookiesIsExists('inGame', 1)) this.setQuestionOrBoard()
-
+    this.setQuestionOrBoard()
     this.setListeners(socket)
   }
 }
