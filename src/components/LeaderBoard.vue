@@ -10,20 +10,18 @@
     </div>
     <button
       class="exit-button"
-      @click="removeCookie"
+      @click="$router.push({path: '/'})"
     >Выйти</button>
   </div>
 </template>
 
 <script>
-import cookie from "@/mixins/addMethods/cookie";
 import PlaceByIndex from "@/components/UI/PlaceByIndex";
 import {mapState} from "vuex";
 
 export default {
   name: "LeaderBoard",
   components: {PlaceByIndex},
-  mixins: [cookie],
   props: {
     leaderBoard: {
       type: Object,
