@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 
-export const backendHost = '62.113.100.228:8000'
+export const backendHost = 'quiz-back-prod.herokuapp.com'
 
 export const ax = axios.create({
   baseURL: `${location.protocol}//${backendHost}/api/v1/`
