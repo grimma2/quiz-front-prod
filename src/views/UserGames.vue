@@ -1,4 +1,5 @@
 <template>
+  <img class="back-button-arrow" @click="back" src="@/assets/right-arrow.png">
   <div class="user-games">
     <confirm-move-dialog
       :need-to-call="$store.state.dialog.moveDialog.needToCall"
@@ -19,20 +20,24 @@ import {mapState} from "vuex";
 import GamesList from "@/components/GamesList";
 import game from '@/mixins/addMethods/gameDelete'
 import ConfirmMoveDialog from "@/components/UI/dialogs/ConfirmMoveDialog";
+import back from "@/mixins/addMethods/back";
+import gamesCookie from "@/mixins/addMethods/gamesCookie";
 
 export default {
   name: "UserGames",
   components: {ConfirmMoveDialog, GamesList},
-  mixins: [game],
+  mixins: [game, back, gamesCookie],
   computed: {
     ...mapState({
       games: state => state.game.games
     })
   },
   async mounted () {
-    let games = localStorage.getItem('games')
-    if (!games) return
-    this.$store.dispatch('game/fetchGames', JSON.parse(games))
+    let games = await this.getGames()
+    console.log(`gamesPks in UserGames mounted() ${games}`)
+    if (!games.length) return
+    console.log('before fetch games by pks')
+    this.$store.dispatch('game/fetchGames', games)
   },
   beforeUnmount() {
     this.$store.commit('game/setGames', [])

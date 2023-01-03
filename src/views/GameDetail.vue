@@ -1,4 +1,5 @@
 <template>
+  <img class="back-button-arrow" @click="back" src="@/assets/right-arrow.png">
   <div class="game-detail">
     <confirm-move-dialog
       :need-to-call="$store.state.dialog.moveDialog.needToCall"
@@ -29,11 +30,13 @@ import {ax, gameSocketEvents} from '@/api/defaults'
 import GameControls from "@/components/GameControls";
 import gameDelete from '@/mixins/addMethods/gameDelete'
 import ConfirmMoveDialog from "@/components/UI/dialogs/ConfirmMoveDialog";
+import back from "@/mixins/addMethods/back";
+import gamesCookie from "@/mixins/addMethods/gamesCookie";
 
 export default {
   name: "GameDetail",
   components: {GameControls, ConfirmMoveDialog},
-  mixins: [gameDelete],
+  mixins: [back, gamesCookie],
   computed: {
     ...mapState({
       game: state => state.game.game
@@ -63,6 +66,7 @@ export default {
     }
   },
   async mounted () {
+    if (!await this.hasInGames(this.$route.params.pk)) window.history.back()
     await this.$store.dispatch('game/fetchGame', this.$route.params.pk)
     this.$store.dispatch('game/makeGameSocket', {gamePk: this.game.pk})
     this.setListeners()

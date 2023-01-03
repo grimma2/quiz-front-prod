@@ -7,7 +7,7 @@ export default {
   methods: {
     dragStart (e) {
       this.dragElement = this.searchParent('question', e.target)
-      this.dragElement.style.opacity = 0
+      this.dragElement.style.opacity = 0.5
       console.log(e.target.classList[0])
     },
     dragEnd (e) {

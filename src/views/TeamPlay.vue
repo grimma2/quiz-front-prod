@@ -1,4 +1,5 @@
 <template>
+  <img class="back-button-arrow" @click="back" src="@/assets/right-arrow.png">
   <div class="team-play">
     <leader-board
       :leader-board="$store.state.team.leaderBoard"
@@ -27,11 +28,12 @@ import objectIsEmpty from "@/mixins/addMethods/objectIsEmpty";
 
 import ActiveQuestion from "@/components/ActiveQuestion";
 import LeaderBoard from "@/components/LeaderBoard";
+import back from "@/mixins/addMethods/back";
 
 export default {
   name: "TeamPlay",
   components: {LeaderBoard, ActiveQuestion},
-  mixins: [objectIsEmpty],
+  mixins: [objectIsEmpty, back],
   methods: {
     socketIsValid(socket) {
       setTimeout(() => {
@@ -44,11 +46,16 @@ export default {
     async setQuestionOrBoard () {
       console.log('setQuestionOrBoard...')
       try {
-        const response = await ax.post('team/get-data/', {code: this.$route.params.code.toUpperCase()})
+        const response = await ax.post('team/get/data/', {code: this.$route.params.code.toUpperCase()})
         console.log(response.data)
         if (response.data.active_question) {
           this.$store.commit('team/setActiveQuestion', response.data.active_question)
           this.$store.commit('team/setTimer', response.data.timer)
+
+          if (response.data.active_question.question_type === 'blitz') {
+            this.$store.commit('team/setRemainAnswers', response.data.remain_answers)
+          }
+
         } else if (response.data.leader_board) {
           this.$store.commit('team/setLeaderBoard', response.data.leader_board)
         } else {

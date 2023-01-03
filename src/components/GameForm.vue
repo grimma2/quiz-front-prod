@@ -13,15 +13,7 @@
           <p>{{ error }}</p>
         </div>
         <input type="text" v-model="game.name" placeholder="Название игры">
-        <input
-          type="number"
-          v-model="game.users_in_team_lim"
-          placeholder="Лимит пользователей в команде"
-        >
-        <div class="question-time-container">
-          <span>Время на один вопрос</span>
-          <input type="time" min="00:00:01" v-model="game.question_time">
-        </div>
+        <time-picker :times="game.question_time.split(':')" @changeTime="changeTime"/>
       </div>
       <div class="teams">
         <p class="title">Команды</p>
@@ -52,11 +44,9 @@
           draggable="true"
           @dragstart="dragStart"
           @dragend.prevent="dragEnd"
-          @dragenter=""
-          @dragleave=""
-          @dragover.prevent=""
           @drop.prevent="dragDrop"
           v-for="ques in game.question_set.sort(sortCompare('order'))"
+          v-if="game.question_set.length"
           :key="ques.pk"
           :data-ques-pk="ques.pk"
         >
@@ -86,14 +76,34 @@
               >
             </div>
           </div>
-          <button
-            class="add-button add-answer"
-            @click.stop="showAnswerDialog(ques)"
-          >Добавить ответ</button>
+
+          <div class="bottom-controls">
+            <!--Выбор типа вопроса-->
+            <div class="question-choose">
+              <div
+                class="default-option"
+                :data-isactive="ques.question_type === 'default' ? 'true' : 'false'"
+                @click="ques.question_type = 'default'"
+              >
+                <p class="type-option">Обычный</p>
+              </div>
+              <div
+                class="blitz-option"
+                :data-isactive="ques.question_type === 'blitz' ? 'true' : 'false'"
+                @click="ques.question_type = 'blitz'"
+              >
+                <p class="type-option">Блитц</p>
+              </div>
+            </div>
+            <button
+              class="add-button add-answer"
+              @click.stop="showAnswerDialog(ques)"
+            >Добавить ответ</button>
+          </div>
         </div>
-<!--        <div class="empty" v-else>-->
-<!--          <p>Здесь будут появляться созданные вами вопросы</p>-->
-<!--        </div>-->
+        <div class="empty" v-else>
+          <p>Здесь будут появляться созданные вами вопросы</p>
+        </div>
 
         <button
           class="add-button add-ques"
@@ -122,17 +132,19 @@ import formValidation from "@/mixins/addMethods/formValidation";
 import draggable from "@/mixins/addData/draggable";
 import sort from "@/mixins/addMethods/sort";
 import searchParent from "@/mixins/addMethods/searchParent";
+import TimePicker from "@/components/TimePicker";
+import gamesCookie from "@/mixins/addMethods/gamesCookie";
 
 export default {
   name: "GameForm",
-  components: {QuestionAnswerDialog},
-  mixins: [game, formValidation, draggable, sort, searchParent],
+  components: {TimePicker, QuestionAnswerDialog},
+  mixins: [game, formValidation, draggable, sort, searchParent, gamesCookie],
   data () {
     return {
       game: {
         question_set: [],
         team_set: [],
-        question_time: '00:00:00'
+        question_time: '00:00'
       },
       teamInput: '',
       questionInput: '',
@@ -198,9 +210,12 @@ export default {
       if (!this.isValid()) return
       try {
         const response = await ax.post(this.getSaveURL(), this.game)
-        let games = JSON.parse(localStorage.getItem('games'))
-        games.push(response.data.pk)
-        localStorage.setItem('games', JSON.stringify(games))
+        if (!this.$route.params.pk) {
+          this.$store.commit('game/setGamesPks', [...this.$store.state.game.gamesPks, response.data.pk])
+          await this.setGames(this.$store.state.game.gamesPks)
+          console.log('after setGames in saveGame')
+        }
+        console.log(response.data)
         this.$router.push({path: `/game/${response.data.pk}`})
       } catch (e) {
         console.log(e)
@@ -222,12 +237,18 @@ export default {
           this.questionInput = ''
         }
       }
+    },
+    changeTime (newTime) {
+      this.game.question_time = newTime
     }
   },
   async mounted () {
     let gamePk = this.$route.params.pk
+    if (!gamePk) return
+    if (!await this.hasInGames(gamePk)) window.history.back()
     if (gamePk) {
       this.game = await this.fetchGame(gamePk)
+      this.game.question_time = this.game.question_time.split(':').slice(1).join(':')
     }
   }
 }
@@ -338,8 +359,39 @@ $xSize: 1.2em;
       grid-column: 1/3;
     }
 
+    .bottom-controls {
+      grid-column: 1/3;
+      display: flex;
+      justify-content: space-between;
+
+      .question-choose {
+        width: 10em;
+        padding: .3em;
+        border-radius: globalDefaults.$smallBorderRadius;
+        background: grey;
+        display: grid;
+        grid-template-columns: repeat(2, calc(50% - .25em));
+        grid-column-gap: .5em;
+
+        > div {
+          border-radius: globalDefaults.$smallBorderRadius;
+          @include flexCentered();
+        }
+
+        > div[data-isactive="true"] {
+          background-color: yellow;
+        }
+
+        > div[data-isactive="false"] {
+          p {
+            color: white;
+          }
+        }
+      }
+    }
+
     button {
-      width: 10em;
+      width: 8em;
     }
   }
 }
