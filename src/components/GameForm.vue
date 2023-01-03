@@ -18,10 +18,7 @@
           v-model="game.users_in_team_lim"
           placeholder="Лимит пользователей в команде"
         >
-        <div class="question-time-container">
-          <span>Время на один вопрос</span>
-          <input type="time" min="00:00:01" v-model="game.question_time">
-        </div>
+        <time-picker/>
       </div>
       <div class="teams">
         <p class="title">Команды</p>
@@ -57,6 +54,7 @@
           @dragover.prevent=""
           @drop.prevent="dragDrop"
           v-for="ques in game.question_set.sort(sortCompare('order'))"
+          v-if="game.question_set.length"
           :key="ques.pk"
           :data-ques-pk="ques.pk"
         >
@@ -91,9 +89,9 @@
             @click.stop="showAnswerDialog(ques)"
           >Добавить ответ</button>
         </div>
-<!--        <div class="empty" v-else>-->
-<!--          <p>Здесь будут появляться созданные вами вопросы</p>-->
-<!--        </div>-->
+        <div class="empty" v-else>
+          <p>Здесь будут появляться созданные вами вопросы</p>
+        </div>
 
         <button
           class="add-button add-ques"
@@ -122,10 +120,11 @@ import formValidation from "@/mixins/addMethods/formValidation";
 import draggable from "@/mixins/addData/draggable";
 import sort from "@/mixins/addMethods/sort";
 import searchParent from "@/mixins/addMethods/searchParent";
+import TimePicker from "@/components/TimePicker";
 
 export default {
   name: "GameForm",
-  components: {QuestionAnswerDialog},
+  components: {TimePicker, QuestionAnswerDialog},
   mixins: [game, formValidation, draggable, sort, searchParent],
   data () {
     return {

@@ -24,10 +24,12 @@ export default {
         this.game.question_set.filter(qs => String(qs.pk) === dragEnterHTML.dataset.quesPk)
       )[0]
 
+      console.log(dragEnterElement.order, dragElement.order)
       let copyEnterEl = {...dragEnterElement}
       let copyEl = {...dragElement}
       dragElement.order = copyEnterEl.order
       dragEnterElement.order = copyEl.order
+      console.log(dragEnterElement.order, dragElement.order)
     }
   }
 }
