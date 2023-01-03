@@ -22,10 +22,11 @@
 <script>
 import texts from "@/assets/text/staticText.json"
 import gameDelete from "@/mixins/addMethods/gameDelete";
+import gamesCookie from "@/mixins/addMethods/gamesCookie";
 
 export default {
   name: "GameControls",
-  mixins: [gameDelete],
+  mixins: [gamesCookie, gameDelete],
   data () {
     return {
       timerUI: '00:00'
@@ -86,6 +87,7 @@ export default {
           'game/setGames', games.filter(game => game.pk !== this.game.pk)
         )
       }
+      console.log('after update games list')
 
       this.$router.push({path: '/games'})
     },

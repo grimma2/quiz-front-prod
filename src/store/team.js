@@ -9,7 +9,8 @@ export const team = {
     gameState: 'OFF',
     activeQuestion: {},
     leaderBoard: {},
-    notHaveLeaderBoard: false
+    notHaveLeaderBoard: false,
+    remainAnswers: [], // for special type of question
   }),
   getters: {},
   mutations: {
@@ -42,11 +43,14 @@ export const team = {
     },
     setNotHaveLeaderBoard (state, notHaveLeaderBoard) {
       state.notHaveLeaderBoard = notHaveLeaderBoard
+    },
+    setRemainAnswers (state, remainAnswers) {
+      state.remainAnswers = remainAnswers
     }
   },
   actions: {
     makeTeamSocket ({commit}, code) {
-      const teamSocket = new WebSocket(`wss://${backendHost}/team-socket/${code}/`)
+      const teamSocket = new WebSocket(`ws://${backendHost}/team-socket/${code}/`)
       teamSocket.onclose = (e) => {console.log(e)}
       commit('setTeamSocket', teamSocket)
     },
@@ -61,8 +65,9 @@ export const team = {
     },
     async fetchQuestion ({commit}, code) {
       try {
-        const response = await ax.post('team/get-active-question/', {code: code})
+        const response = await ax.post('team/get/active-question/', {code: code})
         commit('setActiveQuestion', response.data)
+        commit('setRemainAnswers', response.data.correct_answers)
       } catch (e) {
         console.log(e)
       }
@@ -82,9 +87,12 @@ export const team = {
       console.log('nextQuestion action')
       if (eventData.correct_answers) {
         // if 'eventData' has this property then 'eventData' this question
-        // esle this leader_board
+        // else this leader_board
         commit('setTimer', state.questionTime)
         commit('setActiveQuestion', eventData)
+        // when blitz question just begun,
+        // question's 'correct_answers' same as team's 'remain_answers'
+        commit('setRemainAnswers', eventData.correct_answers)
       } else {
         commit('setLeaderBoard', eventData)
         commit('clearTimerInterval')
@@ -101,6 +109,14 @@ export const team = {
         bonus_points: bonusPoints
       }))
     },
+    sendBlitzAnswer ({state}, {bonusPoints, answerText}) {
+      console.log('sendBlitzAnswer...')
+      state.teamSocket.send(JSON.stringify({
+        type: 'decrement_remain_answers',
+        answer_text: answerText,
+        bonus_points: bonusPoints
+      }))
+    },
     async fetchQuestionTime ({commit}, code) {
       try {
         const response = await ax.post('game/get/question-time/', {code: code})
@@ -108,6 +124,9 @@ export const team = {
       } catch (e) {
         console.log(e)
       }
+    },
+    decrementRemainAnswers ({commit}, {eventData, code}) {
+      commit('setRemainAnswers', eventData)
     }
   },
   namespaced: true

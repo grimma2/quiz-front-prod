@@ -1,11 +1,11 @@
 import {ax, backendHost} from "@/api/defaults";
 
-
 export const game = {
   state: () => ({
     gameSocket: false,
     game: {},
-    games: []
+    games: [],
+    gamesPks: []
   }),
   getters: {},
   mutations: {
@@ -23,13 +23,16 @@ export const game = {
     },
     setGamesState (state, {index, gameState}) {
       state.games[index].game_state = gameState
+    },
+    setGamesPks (state, gamesPks) {
+      state.gamesPks = gamesPks
     }
   },
   actions: {
     makeGameSocket({commit}, {gamePk, commitToState=true}) {
       console.log('makeGameSocket...', commitToState)
       const gameSocket = new WebSocket(
-        `wss://${backendHost}/game-socket/${gamePk}/`,
+        `ws://${backendHost}/game-socket/${gamePk}/`,
       )
       gameSocket.onclose = (e) => {console.log(e)}
 
@@ -43,6 +46,7 @@ export const game = {
       commit('setGameState', eventData)
     },
     async fetchGame ({commit}, gamePk) {
+      console.log('fetchGame')
       try {
         const response = await ax.post('game/detail/', {pk: gamePk})
         commit('setGame', response.data)
@@ -53,6 +57,7 @@ export const game = {
     async fetchGames ({commit}, games) {
       try {
         const response = await ax.post('game/list/', {games: games})
+        console.log(`games fetched: ${response.data}`)
         commit('setGames', response.data)
       } catch (e) {
         console.log(e)

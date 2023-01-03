@@ -10,7 +10,7 @@
     </div>
     <button
       class="exit-button"
-      @click="$router.push({path: '/'})"
+      @click="$router.push({path: '/code-input'})"
     >Выйти</button>
   </div>
 </template>

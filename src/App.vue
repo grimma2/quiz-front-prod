@@ -12,13 +12,8 @@ export default {
         document.title = to.meta.title || 'Игра'
       }
     },
-  },
-  mounted () {
-    if (!localStorage.getItem('games')) {
-      localStorage.setItem('games', JSON.stringify([]))
-    }
   }
-};
+}
 </script>
 
 <style lang="scss">

@@ -2,12 +2,7 @@ export default {
   methods: {
     isValid () {
       if (!this.game.name) {
-        console.log(`Поле "Название игры" не может быть пустым`)
         this.error = `Поле "Название игры" не может быть пустым`
-      } else if (!this.game.users_in_team_lim || this.game.users_in_team_lim < 0) {
-        this.error = (
-          `Поле "Лимит человек в одной комманде" не может быть пустым и должно быть больше ноля`
-        )
       } else if (this.game.question_time === '00:00' || this.game.question_time === '00:00:00' ||  !this.game.question_time) {
         this.error = `Поле "Время на один вопрос" не может быть пустым`
       } else {

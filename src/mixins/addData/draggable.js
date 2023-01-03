@@ -7,7 +7,7 @@ export default {
   methods: {
     dragStart (e) {
       this.dragElement = this.searchParent('question', e.target)
-      this.dragElement.style.opacity = 0
+      this.dragElement.style.opacity = 0.5
       console.log(e.target.classList[0])
     },
     dragEnd (e) {
@@ -24,12 +24,10 @@ export default {
         this.game.question_set.filter(qs => String(qs.pk) === dragEnterHTML.dataset.quesPk)
       )[0]
 
-      console.log(dragEnterElement.order, dragElement.order)
       let copyEnterEl = {...dragEnterElement}
       let copyEl = {...dragElement}
       dragElement.order = copyEnterEl.order
       dragEnterElement.order = copyEl.order
-      console.log(dragEnterElement.order, dragElement.order)
     }
   }
 }

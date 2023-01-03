@@ -1,4 +1,5 @@
 <template>
+  <img class="back-button-arrow" @click="back" src="@/assets/right-arrow.png">
   <div class="code-input">
     <form @submit.stop="submitCode">
       <input class="input" v-model="code" type="text" placeholder="Введите код команды">
@@ -10,8 +11,11 @@
 </template>
 
 <script>
+import back from "@/mixins/addMethods/back";
+
 export default {
   name: "CodeInput",
+  mixins: [back],
   data () {
     return {
       code: '',

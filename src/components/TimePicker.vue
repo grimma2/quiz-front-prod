@@ -1,18 +1,21 @@
 <template>
   <div class="time-picker">
-    <div class="minutes" @click="showMinutes = !showMinutes">
-      <span>{{ minutes }}</span>
-      <div class="value-list" v-if="showMinutes" :ref="'minutes-list'">
-        <p class="value" v-for="value in values" :key="value" @click="minutes = value">{{ value }}</p>
+    <span>Время на один вопрос</span>
+    <div class="time-picker-container">
+      <div class="minutes" @click.stop="showMinutes = true">
+        <span>{{ times[0] }}</span>
+        <div class="value-list" v-if="showMinutes">
+          <p class="value" v-for="value in values" :key="value" @click.stop="setValue(value, 'minutes')">{{ value }}</p>
+        </div>
       </div>
-    </div>
-    <p class="d-dot">
-      <span>:</span>
-    </p>
-    <div class="seconds" @click="showSeconds = !showSeconds">
-      <span>{{ seconds }}</span>
-      <div class="value-list" v-if="showSeconds" :ref="'seconds-list'">
-        <p class="value" v-for="value in values" :key="value" @click="seconds = value">{{ value }}</p>
+      <p class="d-dot">
+        <span>:</span>
+      </p>
+      <div class="seconds" @click.stop="showSeconds = true">
+        <span>{{ times[1] }}</span>
+        <div class="value-list" v-if="showSeconds">
+          <p class="value" v-for="value in values" :key="value" @click.stop="setValue(value, 'seconds')">{{ value }}</p>
+        </div>
       </div>
     </div>
   </div>
@@ -21,10 +24,14 @@
 <script>
 export default {
   name: "TimePicker",
+  props: {
+    times: {
+      type: Array,
+      default: ['00', '00']
+    }
+  },
   data () {
     return {
-      minutes:  '00',
-      seconds: '00',
       values: [
         '00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10',
         '11', '12', '13', '14', '15', '16', '17', '18', '19', '20',
@@ -34,12 +41,24 @@ export default {
         '51', '51', '53', '54', '55', '56', '57', '58', '59'
       ],
       showMinutes: false,
-      showSeconds: false
+      showSeconds: false,
     }
   },
   methods: {
     outsideClick (e) {
-      console.log(this.$refs)
+      this.showMinutes = false
+      this.showSeconds = false
+    },
+    setValue (value, type) {
+      if (type === 'minutes') {
+        // send already parsed time to update
+        // (take one old value and paste new instead other old value)
+        this.$emit('changeTime', `${value}:${this.times[1]}`)
+        this.showMinutes = false
+      } else {
+        this.$emit('changeTime', `${this.times[0]}:${value}`)
+        this.showSeconds = false
+      }
     }
   },
   mounted () {
@@ -56,30 +75,37 @@ export default {
 @import "@/scss/style.scss";
 
 .time-picker {
+  display: flex;
+  align-items: center;
+}
+
+.time-picker-container {
+  margin-left: .5em;
   display: grid;
-  grid-template-columns: 3em .1em 3em;
-  grid-auto-rows: 3em;
+  grid-template-columns: 2em .1em 2em;
+  grid-auto-rows: 2em;
   grid-column-gap: .5em;
 
   .d-dot {
     @include flexCentered();
   }
 
-  .seconds + .minutes {
+  .seconds, .minutes {
     border: 1px solid #c4c2bd;
     border-radius: globalDefaults.$smallBorderRadius;
     background-color: #c4c2bd;
+    @include flexCentered();
 
     .value-list {
+      background-color: white;
       position: absolute;
-      left: 0;
-      right: 0;
-      bottom: 3em;
-      height: 7em;
-      overflow: scroll;
+      margin-top: 17em;
+      width: 2.5em;
+      height: 15em;
+      overflow-y: scroll;
 
       .value {
-        padding: .1em .3em .3em 0;
+        padding: .5em 0 .5em .3em;
 
         &:hover {
           color: white;
