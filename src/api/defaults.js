@@ -1,10 +1,10 @@
 import axios from 'axios'
 
 
-export const backendHost = 'localhost'
+export const backendHost = 'quiz-game1.ru'
 
 export const ax = axios.create({
-  baseURL: `http://${backendHost}/api/v1/`,
+  baseURL: `${location.protocol}//${backendHost}/api/v1/`,
   withCredentials: true
 })
 
