@@ -1,10 +1,10 @@
 import axios from 'axios'
 
 
-export const backendHost = 'localhost:8000'
+export const backendHost = 'localhost'
 
 export const ax = axios.create({
-  baseURL: `${location.protocol}//${backendHost}/api/v1/`,
+  baseURL: `http://${backendHost}/api/v1/`,
   withCredentials: true
 })
 
