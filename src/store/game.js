@@ -32,7 +32,7 @@ export const game = {
     makeGameSocket({commit}, {gamePk, commitToState=true}) {
       console.log('makeGameSocket...', commitToState)
       const gameSocket = new WebSocket(
-        `ws://${backendHost}/game-socket/${gamePk}/`,
+        `wss://${backendHost}/game-socket/${gamePk}/`,
       )
       gameSocket.onclose = (e) => {console.log(e)}
 
