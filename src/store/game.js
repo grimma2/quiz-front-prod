@@ -31,10 +31,11 @@ export const game = {
   actions: {
     makeGameSocket({commit}, {gamePk, commitToState=true}) {
       console.log('makeGameSocket...', commitToState)
+      let wsProtocol = (process.env.NODE_ENV === 'development') ? 'ws' : 'wss'
       const gameSocket = new WebSocket(
-        `wss://${backendHost}/game-socket/${gamePk}/`,
+        `${wsProtocol}://${backendHost}/api/game-socket/${gamePk}/`,
       )
-      gameSocket.onclose = (e) => {console.log(e)}
+      gameSocket.onerror = (e) => {console.log(e)}
 
       if (commitToState) {
         commit('setGameSocket', gameSocket)

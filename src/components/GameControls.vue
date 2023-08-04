@@ -61,8 +61,9 @@ export default {
             'type': 'change_state',
             'event_data': gameState
           }))
-        }, 3500)
+        }, 5000)
       } catch (e) {
+        console.log(e)
         window.location.reload()
       }
 

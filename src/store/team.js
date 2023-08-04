@@ -50,7 +50,8 @@ export const team = {
   },
   actions: {
     makeTeamSocket ({commit}, code) {
-      const teamSocket = new WebSocket(`wss://${backendHost}/team-socket/${code}/`)
+      let wsProtocol = (location.protocol === 'http:') ? 'ws' : 'wss'
+      const teamSocket = new WebSocket(`${wsProtocol}://${backendHost}/api/team-socket/${code}/`)
       teamSocket.onclose = (e) => {console.log(e)}
       commit('setTeamSocket', teamSocket)
     },

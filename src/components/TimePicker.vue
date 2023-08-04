@@ -1,9 +1,9 @@
 <template>
   <div class="time-picker">
-    <span>Время на один вопрос</span>
+    <span>Время на вопрос</span>
     <div class="time-picker-container">
       <div class="minutes" @click.stop="showMinutes = true">
-        <span>{{ times[0] }}</span>
+        <span>{{ minutes }}</span>
         <div class="value-list" v-if="showMinutes">
           <p class="value" v-for="value in values" :key="value" @click.stop="setValue(value, 'minutes')">{{ value }}</p>
         </div>
@@ -12,7 +12,7 @@
         <span>:</span>
       </p>
       <div class="seconds" @click.stop="showSeconds = true">
-        <span>{{ times[1] }}</span>
+        <span>{{ seconds }}</span>
         <div class="value-list" v-if="showSeconds">
           <p class="value" v-for="value in values" :key="value" @click.stop="setValue(value, 'seconds')">{{ value }}</p>
         </div>
@@ -25,9 +25,9 @@
 export default {
   name: "TimePicker",
   props: {
-    times: {
-      type: Array,
-      default: ['00', '00']
+    question: {
+      type: Object,
+      required: true
     }
   },
   data () {
@@ -42,6 +42,8 @@ export default {
       ],
       showMinutes: false,
       showSeconds: false,
+      minutes: '00',
+      seconds: '00'
     }
   },
   methods: {
@@ -52,16 +54,24 @@ export default {
     setValue (value, type) {
       if (type === 'minutes') {
         // send already parsed time to update
-        // (take one old value and paste new instead other old value)
-        this.$emit('changeTime', `${value}:${this.times[1]}`)
+        this.minutes = value
+        this.$emit('changeTime', `${this.minutes}:${this.seconds}`, this.question.pk)
         this.showMinutes = false
       } else {
-        this.$emit('changeTime', `${this.times[0]}:${value}`)
+        this.seconds = value
+        this.$emit('changeTime', `${this.minutes}:${this.seconds}`, this.question.pk)
         this.showSeconds = false
       }
     }
   },
   mounted () {
+    let times = this.question.time.split(':')
+    console.log(times)
+    // take second element as minutes and third element as seconds because we fetch data like
+    // {hours}:{minutes}:{seconds} but we need only {minutes}:{seconds}
+    this.minutes = times[1]
+    this.seconds = times[2]
+
     document.addEventListener('click', this.outsideClick)
   },
   beforeUnmount () {

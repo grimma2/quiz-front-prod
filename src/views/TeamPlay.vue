@@ -41,7 +41,7 @@ export default {
         if (!(socket.readyState === 1)) {
           this.$router.push({path: '/code-input'})
         }
-      }, 1500)
+      }, 3500)
     },
     async setQuestionOrBoard () {
       console.log('setQuestionOrBoard...')

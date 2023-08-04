@@ -15,6 +15,7 @@ export default {
     },
     async setGames (games) {
       try {
+        console.log(`gamesPks: ${games}`)
         await ax.post('game/set/games-cookie/', {gamesPks: JSON.stringify(games)})
       } catch (e) {
         console.log(e)

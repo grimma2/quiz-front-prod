@@ -13,7 +13,6 @@
           <p>{{ error }}</p>
         </div>
         <input type="text" v-model="game.name" placeholder="Название игры">
-        <time-picker :times="game.question_time.split(':')" @changeTime="changeTime"/>
       </div>
       <div class="teams">
         <p class="title">Команды</p>
@@ -43,6 +42,9 @@
           class="question"
           draggable="true"
           @dragstart="dragStart"
+          @dragover.prevent=""
+          @dragleave.prevent=""
+          @dragenter.prevent=""
           @dragend.prevent="dragEnd"
           @drop.prevent="dragDrop"
           v-for="ques in game.question_set.sort(sortCompare('order'))"
@@ -77,6 +79,8 @@
             </div>
           </div>
 
+          <time-picker :question="ques" @changeTime="changeTime"/>
+
           <div class="bottom-controls">
             <!--Выбор типа вопроса-->
             <div class="question-choose">
@@ -110,7 +114,7 @@
           @click="
           addItem(
               game.question_set, {
-                text: 'Новый вопрос', correct_answers: []
+                text: 'Новый вопрос', correct_answers: [], question_type: 'default', time: '00:00'
               }, true
             )
           "
@@ -144,7 +148,6 @@ export default {
       game: {
         question_set: [],
         team_set: [],
-        question_time: '00:00'
       },
       teamInput: '',
       questionInput: '',
@@ -238,8 +241,10 @@ export default {
         }
       }
     },
-    changeTime (newTime) {
-      this.game.question_time = newTime
+    changeTime (newTime, questionPk) {
+      console.log(`question before: ${this.game.question_set.filter(ques => ques.pk === questionPk)[0]}`)
+      this.game.question_set.filter(ques => ques.pk === questionPk)[0].time = newTime
+      console.log(`question after: ${this.game.question_set.filter(ques => ques.pk === questionPk)[0]}`)
     }
   },
   async mounted () {
@@ -248,7 +253,6 @@ export default {
     if (!await this.hasInGames(gamePk)) window.history.back()
     if (gamePk) {
       this.game = await this.fetchGame(gamePk)
-      this.game.question_time = this.game.question_time.split(':').slice(1).join(':')
     }
   }
 }

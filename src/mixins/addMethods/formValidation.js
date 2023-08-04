@@ -3,8 +3,6 @@ export default {
     isValid () {
       if (!this.game.name) {
         this.error = `Поле "Название игры" не может быть пустым`
-      } else if (this.game.question_time === '00:00' || this.game.question_time === '00:00:00' ||  !this.game.question_time) {
-        this.error = `Поле "Время на один вопрос" не может быть пустым`
       } else {
         if (this.isForeignKeyValid()) return true
       }
@@ -23,6 +21,10 @@ export default {
           return
         } else if (!question.correct_answers.length) {
           this.error = `У каждого вопроса должен быть хотя бы один ответ`
+          return
+        } else if (question.time === '00:00') {
+          // add error
+          this.error = 'fdgjdoisjd'
           return
         }
       }
