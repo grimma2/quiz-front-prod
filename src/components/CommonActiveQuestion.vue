@@ -84,7 +84,7 @@ export default {
       }
 
       this.inputAnswers.push(
-        {text: answerText, pk: new Date(), color: 'default'}
+        {text: answerText, pk: String(new Date()), color: 'default'}
       )
 
       if (this.inputAnswers.length === this.activeQuestion.correct_answers.length) {

@@ -1,10 +1,22 @@
 <template>
+  <hints-dialog
+    v-if="dialog.show && (dialog.type === 'hintList')"
+    :question="dialog.question"
+    @changeText="changeHintText"
+    @changeTime="changeTimeHint"
+    @remove="removeHint"
+  />
   <question-answer-dialog
-    v-if="answerDialog.show"
-    :question-pk="answerDialog.questionPk"
-    :question-text="answerDialog.questionText"
+    v-if="dialog.show && (dialog.type === 'answer')"
+    :question="dialog.question"
     @addAnswer="addAnswer"
-    @close="clearAnswerDialog"
+    @close="clearDialog"
+  />
+  <question-hint-dialog
+    v-if="dialog.show && (dialog.type === 'hint')"
+    :question="dialog.question"
+    @addHint="addHint"
+    @close="clearDialog"
   />
   <div class="game-form" @click="hideInputs">
     <div class="form-elements">
@@ -22,7 +34,7 @@
             v-if="teamInput !== team.pk"
             @click.stop="teamInput = team.pk"
           >{{ team.name }}</p>
-          <input class="team-input" type="text" v-else v-model="team.name" @keydown="removeTeamInput">
+          <input class="team-input" type="text" v-else v-model="team.name" @keyup.enter="teamInput = false">
           <div class="delete-team-block" @click="removeTeam(team)">
             <img src="@/assets/x.png" class="delete-team-img">
           </div>
@@ -61,7 +73,7 @@
           <textarea
             class="ques-text-el"
             v-else v-model="ques.text"
-            @keydown="removeQuestionInput"
+            @keyup.enter="questionInput = false"
           />
 
           <div class="delete-ques-block" @click="removeQuestion(ques)">
@@ -79,7 +91,7 @@
             </div>
           </div>
 
-          <time-picker :question="ques" @changeTime="changeTime"/>
+          <time-picker :object="ques" @changeTime="changeTimeQuestion"/>
 
           <div class="bottom-controls">
             <!--Выбор типа вопроса-->
@@ -101,8 +113,18 @@
             </div>
             <button
               class="add-button add-answer"
-              @click.stop="showAnswerDialog(ques)"
+              @click.stop="showDialog(ques, 'answer')"
             >Добавить ответ</button>
+
+            <button
+              class="add-button add-hint"
+              @click.stop="showDialog(ques, 'hint')"
+            >Добавить подсказку</button>
+
+            <button
+              class="add-button add-hint"
+              @click.stop="showDialog(ques, 'hintList')"
+            >Смотреть подсказки</button>
           </div>
         </div>
         <div class="empty" v-else>
@@ -114,7 +136,11 @@
           @click="
           addItem(
               game.question_set, {
-                text: 'Новый вопрос', correct_answers: [], question_type: 'default', time: '00:00'
+                text: 'Новый вопрос',
+                correct_answers: [],
+                hints: [],
+                question_type: 'default',
+                time: '00:00:00'
               }, true
             )
           "
@@ -129,20 +155,25 @@
 </template>
 
 <script>
-import game from '@/mixins/addMethods/game'
-import QuestionAnswerDialog from "@/components/UI/dialogs/QuestionAnswerDialog";
 import {ax} from "@/api/defaults";
+
+import QuestionAnswerDialog from "@/components/UI/dialogs/QuestionAnswerDialog";
+import QuestionHintDialog from "@/components/UI/dialogs/QuestionHintDialog";
+import HintsDialog from "@/components/UI/dialogs/HintsDialog.vue";
+import TimePicker from "@/components/TimePicker";
+
+import game from '@/mixins/addMethods/game'
 import formValidation from "@/mixins/addMethods/formValidation";
 import draggable from "@/mixins/addData/draggable";
 import sort from "@/mixins/addMethods/sort";
 import searchParent from "@/mixins/addMethods/searchParent";
-import TimePicker from "@/components/TimePicker";
 import gamesCookie from "@/mixins/addMethods/gamesCookie";
+import dialogMixin from '@/mixins/addData/dialogMixin'
 
 export default {
   name: "GameForm",
-  components: {TimePicker, QuestionAnswerDialog},
-  mixins: [game, formValidation, draggable, sort, searchParent, gamesCookie],
+  components: {TimePicker, QuestionAnswerDialog, QuestionHintDialog, HintsDialog},
+  mixins: [game, formValidation, draggable, sort, searchParent, gamesCookie, dialogMixin],
   data () {
     return {
       game: {
@@ -151,11 +182,6 @@ export default {
       },
       teamInput: '',
       questionInput: '',
-      answerDialog: {
-        show: false,
-        questionPk: '',
-        questionText: ''
-      },
       error: ''
     }
   },
@@ -173,34 +199,17 @@ export default {
       this.game.question_set = this.game.question_set.filter(qs => qs.pk !== question.pk)
     },
     removeAnswer(question, answer) {
-      question.correct_answers = question.correct_answers.filter(an => an.pk !== answer.pk)
+      question.correct_answers = question.correct_answers.filter(an => an !== answer)
     },
     addItem (array, fields, addOrder=false) {
       let pushObject;
       if (addOrder) {
         let order = this.game.question_set.length ? this.game.question_set.slice(-1)[0].order + 1 : 1
-        pushObject = {...fields, pk: new Date(), order: order}
+        pushObject = {...fields, pk: String(new Date()), order: order}
       } else {
-        pushObject = {...fields, pk: new Date()}
+        pushObject = {...fields, pk: String(new Date())}
       }
       array.push(pushObject)
-    },
-    showAnswerDialog (question) {
-      this.answerDialog.questionPk = question.pk
-      this.answerDialog.questionText = question.text
-      this.answerDialog.show = true
-    },
-    addAnswer (answer, isRare) {
-      let question = this.game.question_set.filter(
-        qs => qs.pk === this.answerDialog.questionPk
-      )
-      question[0].correct_answers.push({text: answer, rare: isRare})
-      this.clearAnswerDialog()
-    },
-    clearAnswerDialog () {
-      this.answerDialog.questionPk = ''
-      this.answerDialog.questionText = ''
-      this.answerDialog.show = false
     },
     getSaveURL () {
       if (this.$route.params.pk) {
@@ -212,6 +221,7 @@ export default {
     async saveGame () {
       if (!this.isValid()) return
       try {
+        console.log(this.game)
         const response = await ax.post(this.getSaveURL(), this.game)
         if (!this.$route.params.pk) {
           this.$store.commit('game/setGamesPks', [...this.$store.state.game.gamesPks, response.data.pk])
@@ -241,10 +251,8 @@ export default {
         }
       }
     },
-    changeTime (newTime, questionPk) {
-      console.log(`question before: ${this.game.question_set.filter(ques => ques.pk === questionPk)[0]}`)
+    changeTimeQuestion (newTime, questionPk) {
       this.game.question_set.filter(ques => ques.pk === questionPk)[0].time = newTime
-      console.log(`question after: ${this.game.question_set.filter(ques => ques.pk === questionPk)[0]}`)
     }
   },
   async mounted () {

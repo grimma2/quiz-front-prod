@@ -25,9 +25,13 @@
 export default {
   name: "TimePicker",
   props: {
-    question: {
+    object: {
       type: Object,
-      required: true
+      default: {}
+    },
+    objectType: {
+      type: String,
+      default: 'question'
     }
   },
   data () {
@@ -55,17 +59,25 @@ export default {
       if (type === 'minutes') {
         // send already parsed time to update
         this.minutes = value
-        this.$emit('changeTime', `${this.minutes}:${this.seconds}`, this.question.pk)
+        this.$emit('changeTime', `00:${this.minutes}:${this.seconds}`, this.object.pk)
         this.showMinutes = false
       } else {
         this.seconds = value
-        this.$emit('changeTime', `${this.minutes}:${this.seconds}`, this.question.pk)
+        this.$emit('changeTime', `00:${this.minutes}:${this.seconds}`, this.object.pk)
         this.showSeconds = false
       }
     }
   },
   mounted () {
-    let times = this.question.time.split(':')
+    if (!this.object.time) return
+    let times;
+
+    if (this.objectType === 'question') {
+      times = this.object.time.split(':')
+    } else if (this.objectType === 'hint') {
+      times = this.object.appearAfter.split(':')
+    }
+
     console.log(times)
     // take second element as minutes and third element as seconds because we fetch data like
     // {hours}:{minutes}:{seconds} but we need only {minutes}:{seconds}

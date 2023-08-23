@@ -11,7 +11,8 @@ export const teamSocketEvents = {
   'next_question': 'team/nextQuestion',
   'change_state': 'team/changeGameState',
   'update_leader_board': 'team/updateLeaderBoard',
-  'decrement_remain_answers': 'team/decrementRemainAnswers'
+  'decrement_remain_answers': 'team/decrementRemainAnswers',
+  'add_hint': 'team/addHint'
 }
 
 export const gameSocketEvents = {

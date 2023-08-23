@@ -2,7 +2,7 @@ import {ax, backendHost} from "@/api/defaults";
 
 export const team = {
   state: () => ({
-    questionTime: 0,
+    time: 0,
     timer: 0,
     timerIntervalId: false,
     teamSocket: false,
@@ -11,6 +11,7 @@ export const team = {
     leaderBoard: {},
     notHaveLeaderBoard: false,
     remainAnswers: [], // for special type of question
+    hints: []
   }),
   getters: {},
   mutations: {
@@ -28,8 +29,8 @@ export const team = {
     setGameState (state, gameState) {
       state.gameState = gameState
     },
-    setQuestionTime (state, questionTime) {
-      state.questionTime = questionTime
+    setTime (state, time) {
+      state.time = time
     },
     setTimer (state, timer) {
       state.timer = timer
@@ -46,6 +47,9 @@ export const team = {
     },
     setRemainAnswers (state, remainAnswers) {
       state.remainAnswers = remainAnswers
+    },
+    setHints (state, hints) {
+      state.hints = hints
     }
   },
   actions: {
@@ -79,17 +83,19 @@ export const team = {
         dispatch('fetchLeaderBoard', code)
         commit('clearTimerInterval')
       } else if (eventData === 'ON') {
-        commit('setTimer', state.questionTime)
+        commit('setTimer', state.time)
         dispatch('fetchQuestion', code)
       }
       commit('setGameState', eventData)
     },
-    nextQuestion ({commit, state}, {eventData, code}) {
+    nextQuestion ({commit, state, dispatch}, {eventData, code}) {
       console.log('nextQuestion action')
       if (eventData.correct_answers) {
-        // if 'eventData' has this property then 'eventData' this question
-        // else this leader_board
-        commit('setTimer', state.questionTime)
+        console.log(eventData)
+        // if 'eventData' has this property then 'eventData' it is question
+        // else it is leader_board
+        dispatch('fetchTime', code)
+        commit('setTimer', state.time)
         commit('setActiveQuestion', eventData)
         // when blitz question just begun,
         // question's 'correct_answers' same as team's 'remain_answers'
@@ -118,16 +124,19 @@ export const team = {
         bonus_points: bonusPoints
       }))
     },
-    async fetchQuestionTime ({commit}, code) {
+    async fetchTime ({commit}, code) {
       try {
         const response = await ax.post('game/get/question-time/', {code: code})
-        commit('setQuestionTime', response.data.time)
+        commit('setTime', response.data.time)
       } catch (e) {
         console.log(e)
       }
     },
     decrementRemainAnswers ({commit}, {eventData, code}) {
       commit('setRemainAnswers', eventData)
+    },
+    addHint ({commit, state}, {eventData, code}) {
+      commit('setHints', [...state.hints, eventData])
     }
   },
   namespaced: true

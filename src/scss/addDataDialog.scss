@@ -1,0 +1,45 @@
+@use "@/scss/globalDefaults";
+@import "@/scss/style.scss";
+
+.question-dialog {
+  @include flexCentered();
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  background: rgba(151, 246, 246, 0.5);
+
+  .dialog {
+    border: 1px solid #1b1b1b;
+    border-radius: globalDefaults.$smallBorderRadius;
+    width: 20em;
+    display: grid;
+    grid-template-columns: 100%;
+    grid-row-gap: $globalPadding;
+    background-color: white;
+    padding: $globalPadding;
+
+    .title {
+      font-weight: bold;
+      font-size: 1.1em;
+    }
+    .ques-text {
+      word-wrap: break-word;
+    }
+
+    form {
+      display: grid;
+      grid-template-columns: 100%;
+      grid-row-gap: $globalPadding;
+
+      button {
+        @include button(#0ede0e);
+      }
+
+      .checkbox {
+        margin-left: .2em;
+      }
+    }
+  }
+}

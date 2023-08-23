@@ -8,6 +8,7 @@
     <active-question
       :question="$store.state.team.activeQuestion"
       v-else-if="!objectIsEmpty($store.state.team.activeQuestion)"
+      :key="activeQuestionKey"
     />
     <div class="not-have-leader-board" v-else-if="$store.state.team.notHaveLeaderBoard">
       <div class="not-have-container">
@@ -34,6 +35,11 @@ export default {
   name: "TeamPlay",
   components: {LeaderBoard, ActiveQuestion},
   mixins: [objectIsEmpty, back],
+  data () {
+    return {
+      activeQuestionKey: 1
+    }
+  },
   methods: {
     socketIsValid(socket) {
       setTimeout(() => {
@@ -48,9 +54,12 @@ export default {
       try {
         const response = await ax.post('team/get/data/', {code: this.$route.params.code.toUpperCase()})
         console.log(response.data)
+
         if (response.data.active_question) {
+
           this.$store.commit('team/setActiveQuestion', response.data.active_question)
           this.$store.commit('team/setTimer', response.data.timer)
+          this.$store.commit('team/setHints', response.data.hints)
 
           if (response.data.active_question.question_type === 'blitz') {
             this.$store.commit('team/setRemainAnswers', response.data.remain_answers)
@@ -61,6 +70,7 @@ export default {
         } else {
           this.$store.commit('team/setNotHaveLeaderBoard', true)
         }
+
         this.$store.commit('team/setGameState', response.data.game_state)
       } catch (e) {
         console.log(e)
@@ -78,6 +88,11 @@ export default {
             code: this.$route.params.code.toUpperCase()
           }
         )
+        
+        // update question component if new question was fetched
+        if (action === 'team/nextQuestion') {
+          this.activeQuestionKey++
+        }
       }
     }
   },
@@ -86,7 +101,7 @@ export default {
     let socket = this.$store.state.team.teamSocket
     this.socketIsValid(socket)
     // if socket is valid fetch question time for timer
-    this.$store.dispatch('team/fetchQuestionTime', this.$route.params.code.toUpperCase())
+    this.$store.dispatch('team/fetchTime', this.$route.params.code.toUpperCase())
     this.setQuestionOrBoard()
     this.setListeners(socket)
   }
