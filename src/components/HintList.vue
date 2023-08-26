@@ -16,7 +16,13 @@
 
 <script>
 export default {
-  name: 'HintList'
+  name: 'HintList',
+  props: {
+    hints: {
+      type: Object,
+      required: true
+    }
+  }
 }
 </script>
 

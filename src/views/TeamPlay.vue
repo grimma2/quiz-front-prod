@@ -8,7 +8,6 @@
     <active-question
       :question="$store.state.team.activeQuestion"
       v-else-if="!objectIsEmpty($store.state.team.activeQuestion)"
-      :key="activeQuestionKey"
     />
     <div class="not-have-leader-board" v-else-if="$store.state.team.notHaveLeaderBoard">
       <div class="not-have-container">
@@ -35,11 +34,6 @@ export default {
   name: "TeamPlay",
   components: {LeaderBoard, ActiveQuestion},
   mixins: [objectIsEmpty, back],
-  data () {
-    return {
-      activeQuestionKey: 1
-    }
-  },
   methods: {
     socketIsValid(socket) {
       setTimeout(() => {
@@ -88,11 +82,6 @@ export default {
             code: this.$route.params.code.toUpperCase()
           }
         )
-        
-        // update question component if new question was fetched
-        if (action === 'team/nextQuestion') {
-          this.activeQuestionKey++
-        }
       }
     }
   },
@@ -101,7 +90,7 @@ export default {
     let socket = this.$store.state.team.teamSocket
     this.socketIsValid(socket)
     // if socket is valid fetch question time for timer
-    this.$store.dispatch('team/fetchTime', this.$route.params.code.toUpperCase())
+    // this.$store.dispatch('team/fetchTime', this.$route.params.code.toUpperCase())
     this.setQuestionOrBoard()
     this.setListeners(socket)
   }

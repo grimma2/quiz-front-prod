@@ -1,18 +1,24 @@
 <template>
   <div class="blitz-active-question">
-    <span>{{ timerUI }}</span>
+    <span v-if="timerUI !== '0:0:0'">{{ timerUI }}</span>
+    <span v-else>нет</span>
     <div class="question">
       <div class="question-container">
         <p class="ques-text">{{ activeQuestion.text }}</p>
+
         <div class="blitz-text">
           <span class="inner-color">Введите как можно больше правильных ответов</span>
         </div>
+
+        <hint-list :hints="$store.state.team.hints"/>
+
         <div class="answers-count">
           <span>Ответов осталось:</span>
           <div>
             <span>{{ $store.state.team.remainAnswers.length }}</span>
           </div>
         </div>
+
         <input
           type="text"
           placeholder="Ввести ответ"
@@ -35,19 +41,15 @@
 </template>
 
 <script>
-import InfoTextDialog from "@/components/UI/dialogs/InfoTextDialog.vue";
 import {mapState} from "vuex";
+
+import InfoTextDialog from "@/components/UI/dialogs/InfoTextDialog.vue";
 import BlitzAnswerInfo from "@/components/UI/BlitzAnswerInfo.vue";
+import HintList from "@/components/HintList.vue";
 
 export default {
   name: "BlitzActiveQuestion",
-  components: {BlitzAnswerInfo, InfoTextDialog},
-  props: {
-    timerUI: {
-      type: String,
-      default: '00:00'
-    }
-  },
+  components: {BlitzAnswerInfo, InfoTextDialog, HintList},
   data () {
     return {
       openInfo: false,

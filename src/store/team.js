@@ -1,9 +1,11 @@
 import {ax, backendHost} from "@/api/defaults";
+import countdown from "@/timer/countdown"
 
 export const team = {
   state: () => ({
     time: 0,
     timer: 0,
+    timerUI: '',
     timerIntervalId: false,
     teamSocket: false,
     gameState: 'OFF',
@@ -13,8 +15,31 @@ export const team = {
     remainAnswers: [], // for special type of question
     hints: []
   }),
-  getters: {},
+  getters: {
+    getFirstTimerValue (state) {
+      if (!state.activeQuestion.hints.length) return 0
+
+      let times = state.activeQuestion.hints[0].appear_after.split(':')
+      let seconds = times[1] * 60 + times[2]
+
+      return Number(seconds)
+    },
+    getGivenTimerValue: (state) => (appearAfter) => {
+      let times = appearAfter.split(':')
+      return Number(times[1] * 60 + times[2])
+    },
+    getNextHintTime: (state) => (hint) => {
+      try {
+        let hintIndex = state.activeQuestion.hints.findIndex(ht => ht.pk === hint.pk)
+        let times = state.activeQuestion.hints[hintIndex + 1].appear_after.split(':')
+        return Number(times[1] * 60 + times[2])
+      } catch (e) {}
+    }
+  },
   mutations: {
+    setTimerUI (state, timerUI) {
+      state.timerUI = timerUI
+    },
     setTeamSocket (state, teamSocket) {
       state.teamSocket = teamSocket
     },
@@ -36,6 +61,7 @@ export const team = {
       state.timer = timer
     },
     setTimerIntervalId (state, timerIntervalId) {
+      try {clearInterval(state.timerIntervalId)} catch (e) {}
       state.timerIntervalId = timerIntervalId
     },
     clearTimerInterval (state) {
@@ -69,6 +95,9 @@ export const team = {
       }
     },
     async fetchQuestion ({commit}, code) {
+      // clear showed hints before fetch new question
+      commit('setHints',  [])
+
       try {
         const response = await ax.post('team/get/active-question/', {code: code})
         commit('setActiveQuestion', response.data)
@@ -77,26 +106,27 @@ export const team = {
         console.log(e)
       }
     },
-    changeGameState ({commit, dispatch, state}, {eventData, code}) {
+    async changeGameState ({commit, dispatch, getters, state}, {eventData, code}) {
       console.log(`state: ${eventData}, code: ${code}`)
       if (eventData === 'OFF') {
-        dispatch('fetchLeaderBoard', code)
+        await dispatch('fetchLeaderBoard', code)
         commit('clearTimerInterval')
       } else if (eventData === 'ON') {
-        commit('setTimer', state.time)
-        dispatch('fetchQuestion', code)
+        await dispatch('fetchQuestion', code)
+        commit('setTimer', getters.getFirstTimerValue)
+        commit('setTimerIntervalId', setInterval(countdown(commit, state), 1000))
       }
       commit('setGameState', eventData)
     },
-    nextQuestion ({commit, state, dispatch}, {eventData, code}) {
+    nextQuestion ({commit, getters, state}, {eventData, code}) {
       console.log('nextQuestion action')
       if (eventData.correct_answers) {
         console.log(eventData)
         // if 'eventData' has this property then 'eventData' it is question
         // else it is leader_board
-        dispatch('fetchTime', code)
-        commit('setTimer', state.time)
         commit('setActiveQuestion', eventData)
+        commit('setTimer', getters.getFirstTimerValue)
+        commit('setTimerIntervalId', setInterval(countdown(commit, state), 1000))
         // when blitz question just begun,
         // question's 'correct_answers' same as team's 'remain_answers'
         commit('setRemainAnswers', eventData.correct_answers)
@@ -124,19 +154,21 @@ export const team = {
         bonus_points: bonusPoints
       }))
     },
-    async fetchTime ({commit}, code) {
-      try {
-        const response = await ax.post('game/get/question-time/', {code: code})
-        commit('setTime', response.data.time)
-      } catch (e) {
-        console.log(e)
-      }
-    },
     decrementRemainAnswers ({commit}, {eventData, code}) {
       commit('setRemainAnswers', eventData)
     },
-    addHint ({commit, state}, {eventData, code}) {
+    addHint ({commit, state, getters}, {eventData, code}) {
       commit('setHints', [...state.hints, eventData])
+
+      let nextHintTime = getters.getNextHintTime(eventData)
+      if (nextHintTime) {
+        commit('setTimer',
+          nextHintTime -
+          getters.getGivenTimerValue(eventData.appear_after)
+        )
+
+        commit('setTimerIntervalId', setInterval(countdown(commit, state), 1000))
+      }
     }
   },
   namespaced: true

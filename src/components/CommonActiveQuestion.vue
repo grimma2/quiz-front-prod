@@ -6,16 +6,22 @@
       @close="openAnswers = false"
       v-if="openAnswers"
     />
-    <span>{{ timerUI }}</span>
+    <span v-if="$store.state.team.timerUI !== '0:0:0'">{{ $store.state.team.timerUI }}</span>
+    <span v-else>нет</span>
     <div class="question">
       <div class="question-container">
         <p class="ques-text">{{ activeQuestion.text }}</p>
+
         <div class="limit">
           <span class="inner-color">В этом вопросе нужно ввести {{ activeQuestion.correct_answers.length }} ответов</span>
         </div>
+
+        <hint-list :hints="$store.state.team.hints"/>
+
         <div class="error" v-if="error">
           <span class="inner-color">{{ error }}</span>
         </div>
+
         <div class="question-answers" v-if="inputAnswers.length">
           <img @click.stop="openAnswers = true" src="@/assets/more.png">
           <div :data-color="answer.color" class="ques-answer" v-for="answer in inputAnswers" :key="answer.pk">
@@ -23,6 +29,7 @@
             <img class="delete-answer-img" src="@/assets/x.png" @click="deleteAnswer(answer)">
           </div>
         </div>
+
         <div class="empty" v-else>
           <span>Здесь будут появляться ваши ответы</span>
         </div>
@@ -47,10 +54,11 @@ import {mapState} from "vuex";
 
 import InfoTextDialog from "@/components/UI/dialogs/InfoTextDialog.vue";
 import AnswerListDialog from "@/components/UI/dialogs/AnswerListDialog.vue";
+import HintList from "@/components/HintList.vue";
 
 export default {
   name: "CommonActiveQuestion",
-  components: {InfoTextDialog, AnswerListDialog},
+  components: {InfoTextDialog, AnswerListDialog, HintList},
   data () {
     return {
       currentInput: '',
@@ -58,12 +66,6 @@ export default {
       openAnswers: false,
       openInfo: false,
       error: '',
-    }
-  },
-  props: {
-    timerUI: {
-      type: String,
-      default: '00:00'
     }
   },
   computed: {

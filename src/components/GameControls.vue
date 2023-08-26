@@ -27,11 +27,6 @@ import gamesCookie from "@/mixins/addMethods/gamesCookie";
 export default {
   name: "GameControls",
   mixins: [gamesCookie, gameDelete],
-  data () {
-    return {
-      timerUI: '00:00'
-    }
-  },
   props: {
     game: {
       type: Object,
