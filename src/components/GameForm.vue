@@ -5,6 +5,7 @@
     @changeText="changeHintText"
     @changeTime="changeTimeHint"
     @remove="removeHint"
+    @close="clearDialog"
   />
   <question-answer-dialog
     v-if="dialog.show && (dialog.type === 'answer')"
@@ -91,8 +92,6 @@
             </div>
           </div>
 
-          <time-picker :object="ques" @changeTime="changeTimeQuestion"/>
-
           <div class="bottom-controls">
             <!--Выбор типа вопроса-->
             <div class="question-choose">
@@ -115,16 +114,18 @@
               class="add-button add-answer"
               @click.stop="showDialog(ques, 'answer')"
             >Добавить ответ</button>
+          </div>
+
+          <div class="bottom-controls">
+            <button
+              class="add-button add-hint"
+              @click.stop="showDialog(ques, 'hintList')"
+            >Смотреть подсказки</button>
 
             <button
               class="add-button add-hint"
               @click.stop="showDialog(ques, 'hint')"
             >Добавить подсказку</button>
-
-            <button
-              class="add-button add-hint"
-              @click.stop="showDialog(ques, 'hintList')"
-            >Смотреть подсказки</button>
           </div>
         </div>
         <div class="empty" v-else>
@@ -250,9 +251,6 @@ export default {
           this.questionInput = ''
         }
       }
-    },
-    changeTimeQuestion (newTime, questionPk) {
-      this.game.question_set.filter(ques => ques.pk === questionPk)[0].time = newTime
     }
   },
   async mounted () {
@@ -353,7 +351,8 @@ $xSize: 1.2em;
     padding: .5em;
     display: grid;
     grid-template-columns: calc(100% - $xSize - .25em) calc($xSize - .25em);
-    grid-gap: .25em;
+    grid-column-gap: .25em;
+    grid-row-gap: .5em;
 
     .ques-text-el {
       grid-row: 1/3;
@@ -402,14 +401,10 @@ $xSize: 1.2em;
       }
     }
 
-    button {
+/*     button {
       width: 8em;
-    }
+    } */
   }
-}
-
-.question-drag {
-  border: 1px solid blue;
 }
 
 .title {

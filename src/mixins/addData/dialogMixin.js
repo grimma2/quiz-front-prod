@@ -32,15 +32,15 @@ export default {
       this.clearDialog()
     },
     changeTimeHint (newTime, hintPk) {
-      this.dialog.question.hints.filter(ht => ht.pk === hintPk)[0].appearAfter = newTime
+      console.log(this.dialog, hintPk, newTime)
+      this.dialog.question.hints.filter(ht => ht.pk === hintPk)[0].appear_after = newTime
     },
     changeHintText (hint) {
       this.dialog.question.hints.filter(ht => ht.pk === hint.pk)[0].text = hint.text
     },
     removeHint (hint) {
-      this.questionFotHints = (
-        this.dialog.question.filter(ht => ht.pk !== hint.pk)
-      )
+      console.log(hint)
+      this.dialog.question.hints.pop(hint)
     },
     clearDialog () {
       console.log('clear dialog')

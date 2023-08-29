@@ -6,12 +6,15 @@ function countdown (commit, state) {
     let minutes = Math.floor(state.timer / 60) - hours * 60
     let seconds = state.timer - (hours * 3600 + minutes * 60)
 
-    if (hours >= 0 && minutes >= 0 && seconds >= 0) {
-      commit('setTimerUI', `${hours}:${minutes}:${seconds}`)
-      commit('setTimer', state.timer - 1)
-    } else {
-      console.log(`set ${hours}:${minutes}:${seconds}`)
+    if (seconds < 10) {
+      seconds = `0${seconds}`
     }
+    if (minutes < 10) {
+      minutes = `0${minutes}`
+    }
+
+    commit('setTimerUI', `${minutes}:${seconds}`)
+    commit('setTimer', state.timer - 1)
 
     if (state.timer <= 0) {
       try {

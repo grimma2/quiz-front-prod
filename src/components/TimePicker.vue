@@ -1,6 +1,6 @@
 <template>
   <div class="time-picker">
-    <span>Время на вопрос</span>
+    <span>Время, через котрое появляется</span>
     <div class="time-picker-container">
       <div class="minutes" @click.stop="showMinutes = true">
         <span>{{ minutes }}</span>
@@ -28,10 +28,6 @@ export default {
     object: {
       type: Object,
       default: {}
-    },
-    objectType: {
-      type: String,
-      default: 'question'
     }
   },
   data () {
@@ -69,16 +65,9 @@ export default {
     }
   },
   mounted () {
-    if (!this.object.time) return
-    let times;
+    if (!this.object.appear_after) return
+    let times = this.object.appear_after.split(':')
 
-    if (this.objectType === 'question') {
-      times = this.object.time.split(':')
-    } else if (this.objectType === 'hint') {
-      times = this.object.appearAfter.split(':')
-    }
-
-    console.log(times)
     // take second element as minutes and third element as seconds because we fetch data like
     // {hours}:{minutes}:{seconds} but we need only {minutes}:{seconds}
     this.minutes = times[1]
