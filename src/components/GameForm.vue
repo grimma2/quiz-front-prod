@@ -140,8 +140,7 @@
                 text: 'Новый вопрос',
                 correct_answers: [],
                 hints: [],
-                question_type: 'default',
-                time: '00:00:00'
+                question_type: 'default'
               }, true
             )
           "
