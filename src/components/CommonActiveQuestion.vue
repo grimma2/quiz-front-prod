@@ -16,7 +16,7 @@
         <img
           class="question-image"
           v-if="activeQuestion.image" 
-          :src="`http://localhost:8000${activeQuestion.image}`"
+          :src="activeQuestion.image"
         >
 
         <p class="ques-text" v-if="activeQuestion.text">{{ activeQuestion.text }}</p>
