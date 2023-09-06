@@ -50,6 +50,8 @@ export default {
     },
     changeState (gameState) {
       let socket = this.getSocket()
+      console.log('before change state')
+      console.log(socket)
       try {
         setTimeout(() => {
           socket.send(JSON.stringify({

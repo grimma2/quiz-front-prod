@@ -3,9 +3,7 @@
     <common-active-question
       v-if="$store.state.team.activeQuestion.question_type !== 'blitz'"
     />
-    <blitz-active-question
-      v-else
-    />
+    <blitz-active-question v-else/>
   </div>
 </template>
 

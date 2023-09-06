@@ -1,10 +1,12 @@
 <template>
   <div class="blitz-active-question">
-    <span v-if="timerUI !== '0:0:0'">{{ timerUI }}</span>
-    <span v-else>нет</span>
+    <span v-if="timerUI !== '00:00' && timerUI !== '00:01'">{{ timerUI }}</span>
     <div class="question">
       <div class="question-container">
-        <p class="ques-text">{{ activeQuestion.text }}</p>
+
+        <img class="question-image" v-if="activeQuestion.image" :src="activeQuestion.image">
+
+        <p class="ques-text" v-if="activeQuestion.text">{{ activeQuestion.text }}</p>
 
         <div class="blitz-text">
           <span class="inner-color">Введите как можно больше правильных ответов</span>
@@ -75,22 +77,20 @@ export default {
           an => an.text.trim().toLowerCase() === this.currentInput.trim().toLowerCase()
         )
       )
-      console.log(`after trim: ${correctAnswer}`)
+
       if (correctAnswer.length) {
-        console.log('answer is valid!')
         correctAnswer = correctAnswer[0]
         let bonusPoints = 0
         if (correctAnswer.rare) {
           bonusPoints = 1
         }
-        console.log('before send event')
+
         this.$store.dispatch('team/sendBlitzAnswer',
           {
             answerText: correctAnswer.text,
             bonusPoints: bonusPoints
           }
         )
-        console.log('after send event')
 
         this.showAnswerInfo = {show: true, answerIsCorrect: true}
         this.currentInput = ''

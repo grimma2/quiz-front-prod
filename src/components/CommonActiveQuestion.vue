@@ -6,11 +6,20 @@
       @close="openAnswers = false"
       v-if="openAnswers"
     />
-    <span v-if="$store.state.team.timerUI !== '0:0:0'">{{ $store.state.team.timerUI }}</span>
-    <span v-else>нет</span>
+    <span
+      v-if="$store.state.team.timerUI !== '00:00' && $store.state.team.timerUI !== '00:01'"
+    >{{ $store.state.team.timerUI }}</span>
+
     <div class="question">
       <div class="question-container">
-        <p class="ques-text">{{ activeQuestion.text }}</p>
+
+        <img
+          class="question-image"
+          v-if="activeQuestion.image" 
+          :src="`http://localhost:8000${activeQuestion.image}`"
+        >
+
+        <p class="ques-text" v-if="activeQuestion.text">{{ activeQuestion.text }}</p>
 
         <div class="limit">
           <span class="inner-color">В этом вопросе нужно ввести {{ activeQuestion.correct_answers.length }} ответов</span>
@@ -97,6 +106,8 @@ export default {
       this.inputAnswers = this.inputAnswers.filter(an => an.pk !== answer.pk)
     },
     validateAllAnswers() {
+      // clear error after new answer was inputed
+      this.error = ''
       let bonusPoints = 0
 
       for (let correct of this.activeQuestion.correct_answers) {
@@ -151,7 +162,6 @@ $elementsMargin: 5em;
 
   .question {
     width: globalDefaults.$questionWidth;
-    margin-top: $elementsMargin;
     display: flex;
     align-items: flex-start;
     > img {
@@ -169,6 +179,10 @@ $elementsMargin: 5em;
 
     .ques-text {
       word-wrap: break-word;
+    }
+
+    .question-image {
+      width: 100%;
     }
 
     .limit {

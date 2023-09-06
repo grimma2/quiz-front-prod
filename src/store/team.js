@@ -20,13 +20,15 @@ export const team = {
       if (!state.activeQuestion.hints.length) return 0
 
       let times = state.activeQuestion.hints[0].appear_after.split(':')
-      let seconds = times[1] * 60 + times[2]
+      console.log(times)
+      let seconds = Number(times[1]) * 60 + Number(times[2])
+      console.log(seconds)
 
-      return Number(seconds)
+      return seconds
     },
     getGivenTimerValue: (state) => (appearAfter) => {
       let times = appearAfter.split(':')
-      return Number(times[1] * 60 + times[2])
+      return Number(times[1]) * 60 + Number(times[2])
     },
     getNextHintTime: (state) => (hint) => {
       try {

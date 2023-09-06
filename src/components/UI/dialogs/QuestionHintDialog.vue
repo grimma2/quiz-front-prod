@@ -1,11 +1,12 @@
 <template>
   <div class="question-dialog">
     <div class="dialog">
-      <p class="title">Добавить ответ на вопрос</p>
+      <span class="error" v-if="error">{{ error }}</span>
+      <p class="title">Добавить подсказку</p>
       <p class="ques-text">{{ question.text }}</p>
-      <form @submit.stop="$emit('addHint', hint)">
+      <form @submit.stop>
         <input name="ques-text-input" type="text" v-model="hint.text">
-        <button type="submit">Сохранить</button>
+        <button type="button" @click="addHint(hint)">Сохранить</button>
       </form>
 
       <time-picker :object="hint" @changeTime="changeTime"/>
@@ -16,15 +17,18 @@
 <script>
 import TimePicker from '@/components/TimePicker.vue'
 
+import hintFormValidation from '@/mixins/validators/hintFormValidation'
+
 export default {
   name: "QuestionHintDialog",
   components: {TimePicker},
+  mixins: [hintFormValidation],
   data () {
     return {
       hint: {
         text: '',
         appear_after: '00:00:00'
-      },
+      }
     }
   },
   props: {
@@ -42,6 +46,11 @@ export default {
     },
     changeTime (appearAfter, _) {
       this.hint.appear_after = appearAfter
+    },
+    addHint (hint) {
+      if (this.validateHint(hint)) {
+        this.$emit('addHint', hint)
+      }
     }
   },
   mounted () {
@@ -57,4 +66,15 @@ export default {
 
 <style lang="scss" scoped>
 @use "@/scss/addDataDialog";
+@use "@/scss/globalDefaults";
+@import "@/scss/style.scss";
+
+.error {
+  border: 1px solid red;
+  border-radius: globalDefaults.$smallBorderRadius;
+  background-color: red;
+  color: white;
+  padding: .3em;
+  word-break: break-word;
+}
 </style>

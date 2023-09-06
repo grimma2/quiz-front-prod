@@ -29,6 +29,7 @@ import objectIsEmpty from "@/mixins/addMethods/objectIsEmpty";
 import ActiveQuestion from "@/components/ActiveQuestion";
 import LeaderBoard from "@/components/LeaderBoard";
 import back from "@/mixins/addMethods/back";
+import countdown from "@/timer/countdown";
 
 export default {
   name: "TeamPlay",
@@ -52,7 +53,13 @@ export default {
         if (response.data.active_question) {
 
           this.$store.commit('team/setActiveQuestion', response.data.active_question)
+
           this.$store.commit('team/setTimer', response.data.timer)
+          this.$store.commit(
+            'team/setTimerIntervalId',
+            setInterval(countdown(this.$store.commit, this.$store.state.team, true), 1000)
+          )
+
           this.$store.commit('team/setHints', response.data.hints)
 
           if (response.data.active_question.question_type === 'blitz') {

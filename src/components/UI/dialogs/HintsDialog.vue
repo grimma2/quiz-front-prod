@@ -2,6 +2,7 @@
   <div class="hints-dialog">
     <div class="dialog">
       <div class="question-hints">
+        <span class="error" v-if="error">{{ error }}</span>
 
         <div data-color="default" class="ques-hint" v-for="hint in question.hints" :key="hint.pk">
           <textarea
@@ -36,9 +37,12 @@
 <script>
 import TimePicker from '@/components/TimePicker.vue'
 
+import hintFormValidation from '@/mixins/validators/hintFormValidation'
+
 export default {
   name: 'HintsDialog',
   components: {TimePicker},
+  mixins: [hintFormValidation],
   props: {
     question: {
       type: Object,
@@ -47,12 +51,12 @@ export default {
   },
   data () {
     return {
-      editHint: {}
+      editHint: {},
+      error: ''
     }
   },
   methods: {
     removeHint (hint) {
-      console.log(hint)
       this.$emit('remove', hint)
     },
     changeHint () {
@@ -65,6 +69,11 @@ export default {
     close (e) {
       let el = document.querySelector('div.dialog')
       if (!el.contains(e.target)) {
+        for (let hint of this.question.hints) {
+          // exit from function if validation was failed
+          if (!this.validateHint(hint)) return
+        }
+
         this.$emit('close')
       }
     }
@@ -107,6 +116,15 @@ export default {
       display: grid;
       grid-template-columns: 100%;
       grid-row-gap: 1.5em;
+
+      .error {
+        border: 1px solid red;
+        border-radius: globalDefaults.$smallBorderRadius;
+        background-color: red;
+        color: white;
+        padding: .3em;
+        word-break: break-word;
+      }
 
       .ques-hint {
         display: flex;

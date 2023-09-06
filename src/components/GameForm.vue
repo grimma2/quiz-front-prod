@@ -74,7 +74,7 @@
           <textarea
             class="ques-text-el"
             v-else v-model="ques.text"
-            @keyup.enter="questionInput = false"
+            @keyup.enter="closeQuestionInput(ques)"
           />
 
           <div class="delete-ques-block" @click="removeQuestion(ques)">
@@ -163,7 +163,7 @@ import HintsDialog from "@/components/UI/dialogs/HintsDialog.vue";
 import TimePicker from "@/components/TimePicker";
 
 import game from '@/mixins/addMethods/game'
-import formValidation from "@/mixins/addMethods/formValidation";
+import gameFormValidation from "@/mixins/validators/gameFormValidation";
 import draggable from "@/mixins/addData/draggable";
 import sort from "@/mixins/addMethods/sort";
 import searchParent from "@/mixins/addMethods/searchParent";
@@ -173,7 +173,7 @@ import dialogMixin from '@/mixins/addData/dialogMixin'
 export default {
   name: "GameForm",
   components: {TimePicker, QuestionAnswerDialog, QuestionHintDialog, HintsDialog},
-  mixins: [game, formValidation, draggable, sort, searchParent, gamesCookie, dialogMixin],
+  mixins: [game, gameFormValidation, draggable, sort, searchParent, gamesCookie, dialogMixin],
   data () {
     return {
       game: {
@@ -250,6 +250,10 @@ export default {
           this.questionInput = ''
         }
       }
+    },
+    closeQuestionInput (question) {
+      question.text = question.text.trim()
+      this.questionInput = ''
     }
   },
   async mounted () {

@@ -32,6 +32,7 @@ export const game = {
     makeGameSocket({commit}, {gamePk, commitToState=true}) {
       console.log('makeGameSocket...', commitToState)
       let wsProtocol = (process.env.NODE_ENV === 'development') ? 'ws' : 'wss'
+      console.log(wsProtocol)
       const gameSocket = new WebSocket(
         `${wsProtocol}://${backendHost}/api/game-socket/${gamePk}/`,
       )

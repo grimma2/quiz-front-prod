@@ -36,7 +36,7 @@ export default {
       this.dialog.question.hints.filter(ht => ht.pk === hintPk)[0].appear_after = newTime
     },
     changeHintText (hint) {
-      this.dialog.question.hints.filter(ht => ht.pk === hint.pk)[0].text = hint.text
+      this.dialog.question.hints.filter(ht => ht.pk === hint.pk)[0].text = hint.text.trim()
     },
     removeHint (hint) {
       console.log(hint)
