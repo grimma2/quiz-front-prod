@@ -1,19 +1,87 @@
-# quiz-frontend
+##### <a href="https://github.com/grimma2/quiz-back-prod/tree/main">Русский</a> / <a href="https://github.com/grimma2/quiz-back-prod/blob/main/README-en.md">English</a>
+## Описание
+Это frontend репозиторий онлайн мини-игры, созданной для людей, проводящих реальную игру, в которой несколько команд отвечают на вопросы на веб-сайте и вводят ответы, найденные за его пределами. Сайт будет вскоре доступен всем по этой ссылке https://quiz-game1.ru
 
-## Project setup
+## Функциональность
+Любой пользователь может создать конфигурацию игры без регистрации. В этой конфигурации они должны ввести следующие данные:
+- Команды, участвующие в игре.
+- Вопросы и соответствующие ответы.
+- Выбрать тип вопроса, который влияет на то, как вопрос представлен во время игры.
+- Подсказки, которые появляются по мере ответов команды на вопросы (временные интервалы для появления подсказок).
+- Команды входят в игру с помощью генерируемого для каждой команды кода, который направляет их на страницу процесса игры. На этой странице они могут видеть:
+  - Таймер, указывающий время до следующей подсказки.
+  - Количество ответов, которые им нужно ввести.
+  - Уже введенные ответы и их правильность.
+
+Кроме того, когда кто-то отвечает на вопрос, все пользователи в игре синхронизируются, и каждый переходит к следующему вопросу вместе.
+
+## Как установить
+### Установка и запуск backend части
+Версия python>=3.10.**
+
+Создать в репазитории виртуальное окружение и активировать его.
+Установить зависимости
+```
+pip install -r requirements.txt
+```
+
+Создать файл <code>.env.bat</code> с переменными окружения, как в примере ниже. Значения в треугольных скобках нужно заменить.
+**Примечание: POSTGRES_PASSWORD нужен только для production**
+```
+set CHANNEL_REDIS=redis://localhost:6379/1
+set SECRET_KEY=<YOUR_SECRET_KEY>
+set POSTGRES_PASSWORD=<YOUR_POSTGRES_PASSWORD>
+set CELERY_REDIS=redis://localhost:6379/0
+```
+Чтобы активировать эти переменные, необходимо в Windows cmd, находясь в директории проекта прописать
+```
+call .env.bat
+```
+
+После чего запустить Django сервер
+```
+python manage.py runserver
+```
+
+### Установка и запуск frontend части
+Для того, чтлбы в полной мере увидеть функциональность проекта, так же можно и скачать fontend репазиторий **quiz-front-prod** на этом аккаунте и запустить его парой командой, но перед этим, скачать **node js** на оффициальном сайте, если он у вас не установлен https://nodejs.org/en
+Установка зависимостей
 ```
 npm install
 ```
-
-### Compiles and hot-reloads for development
+и запуск сервера
 ```
 npm run serve
 ```
 
-### Compiles and minifies for production
+### Установка и запуск Celery
+Для коректной работы, а именно, для того, чтобы запустить сам процесс игры, нужно установить **Celery**. ДЛя этого, необходимо установить **Docker**, вот гайд для Windows:
+https://docs.docker.com/desktop/install/windows-install/ и для Linux (Ubuntu): https://docs.docker.com/engine/install/ubuntu/
+После того, как вы установили **Docker**, необходимо запустить в нём либо **redis** либо **rabbitmq**, здесь будет показан пример в редисом:
 ```
-npm run build
+docker run -d -p 6379:6379 redis
+```
+И запустить сам redis находясь при этом в директории проекта со всеми установленными зависимостями и включёнными переменными окружения с помощью <code>call .env.bat</code>
+```
+celery -A quiz worker -l info
+```
+Примечание: если у вашего устройства не хватает мощьности для запуска Celery такой командой, успользуйте вместо неё
+```
+celery -A quiz worker -l info --pool=solo
 ```
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+**Страница списка игр**
+<div><img src="https://github.com/grimma2/quiz-back-prod/assets/80467627/1c43e873-d71e-46e0-98cd-1d0008c015ee" width="150px" height="350px" /></div>
+
+**Страница редактирования игры**
+<div><img src="https://github.com/grimma2/quiz-back-prod/assets/80467627/d00eab14-7b99-428e-ac9d-6c66e6396108" width="150px" height="350px" /></div>
+
+**Форма добавления подсказки и вопроса**
+<div><img src="https://github.com/grimma2/quiz-back-prod/assets/80467627/7af6d7cc-db93-4047-a22d-1b01db95c4e5" width="150px" height="350px" /></div>
+<div><img src="https://github.com/grimma2/quiz-back-prod/assets/80467627/ae31c481-0743-4e15-8e16-2292ed1616a0" width="150px" height="350px" /></div>
+
+**Страница игры**
+<div><img src="https://github.com/grimma2/quiz-back-prod/assets/80467627/62e3367c-1570-4a02-9a44-82a028794ab6" width="150px" height="350px" /></div>
+
+
+
