@@ -1,4 +1,4 @@
-##### <a href="https://github.com/grimma2/quiz-back-prod/tree/main">Русский</a> / <a href="https://github.com/grimma2/quiz-back-prod/blob/main/README-en.md">English</a>
+##### <a href="https://github.com/grimma2/quiz-front-prod">Русский</a> / <a href="https://github.com/grimma2/quiz-front-prod/blob/main2/README-en.md">English</a>
 ## Описание
 Это frontend репозиторий онлайн мини-игры, созданной для людей, проводящих реальную игру, в которой несколько команд отвечают на вопросы на веб-сайте и вводят ответы, найденные за его пределами. Сайт будет вскоре доступен всем по этой ссылке https://quiz-game1.ru
 
